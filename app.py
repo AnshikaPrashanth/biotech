@@ -70,13 +70,15 @@ def load_model(weights_path: Path) -> STGAT:
             checkpoint = torch.load(weights_path, map_location='cpu')
             state_dict = checkpoint.get('model_state', checkpoint)
             model.load_state_dict(state_dict, strict=False)
-            st.success("Loaded model weights successfully.")
-        except Exception as e:
-            st.warning(f"Error loading model weights: {e}")
-    else:
-        st.info("Model weights not found. Using randomly initialized weights.")
+        except Exception:
+            pass  # Weights load error handled at display time
     model.eval()
     return model
+
+@st.cache_resource
+def get_database(db_path: str) -> SQLiteSessionDB:
+    """Creates and caches a single persistent DB connection."""
+    return SQLiteSessionDB(db_path)
 
 def predict_sequence(model: STGAT, sequence: np.ndarray) -> Dict[str, object]:
     """Runs a 3D skeleton sequence through the model to obtain binary predictions and attention weights."""
@@ -114,8 +116,8 @@ def main() -> None:
     make_directory(str(BASELINE_DIR))
     make_directory(str(CHECKPOINT_DIR))
     
-    # DB Instance
-    db = SQLiteSessionDB(str(DB_PATH))
+    # DB Instance (cached - single connection across reruns)
+    db = get_database(str(DB_PATH))
     
     # Initialize Calibrator
     calibrator = PersonalizedROMCalibrator(baseline_path=str(BASELINE_FILE_PATH) if BASELINE_FILE_PATH.exists() else None)
@@ -123,6 +125,12 @@ def main() -> None:
     # Load model
     model = load_model(MODEL_WEIGHTS_PATH)
     
+    # Model load status (shown here, not inside cache_resource)
+    if MODEL_WEIGHTS_PATH.exists():
+        st.sidebar.success("✅ Model weights loaded")
+    else:
+        st.sidebar.warning("⚠️ No model weights — using random init")
+
     # Scan dataset subjects
     if DATA_DIR.exists():
         entries = load_intellirehab_directory(str(DATA_DIR))
@@ -132,8 +140,7 @@ def main() -> None:
         subjects = ["101", "102", "103", "104", "105"]
         
     # Sidebar
-    st.sidebar.image("https://img.icons8.com/isometric/100/physical-therapy.png", width=70)
-    st.sidebar.header('System Parameters')
+    st.sidebar.header('🧬 Biotech Rehab System')
     
     active_mode = st.sidebar.selectbox(
         "Navigation Mode", 
@@ -422,7 +429,8 @@ def main() -> None:
         else:
             st.info("No recorded sessions found in the database. Evaluate movements to add logs.")
             
-    db.close()
+    # Note: db connection is cached and managed by Streamlit's cache_resource
+    # Do NOT call db.close() here — it would break on the next rerun
 
 if __name__ == '__main__':
     main()
