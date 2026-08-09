@@ -1,0 +1,188 @@
+{
+  "n_samples": 2592,
+  "top10_joints": [
+    {
+      "rank": 1,
+      "joint": "SpineShoulder",
+      "mean_attention": 0.8053911828010538,
+      "std_attention": 0.0022034304381964593
+    },
+    {
+      "rank": 2,
+      "joint": "SpineBase",
+      "mean_attention": 0.7789616573969891,
+      "std_attention": 0.009252768678553302
+    },
+    {
+      "rank": 3,
+      "joint": "WristRight",
+      "mean_attention": 0.7530913778385262,
+      "std_attention": 0.003928316727084609
+    },
+    {
+      "rank": 4,
+      "joint": "WristLeft",
+      "mean_attention": 0.752584067851673,
+      "std_attention": 0.003220088026509047
+    },
+    {
+      "rank": 5,
+      "joint": "KneeRight",
+      "mean_attention": 0.7023654682676733,
+      "std_attention": 0.01478825729587954
+    },
+    {
+      "rank": 6,
+      "joint": "KneeLeft",
+      "mean_attention": 0.7017329936548148,
+      "std_attention": 0.013315757693218888
+    },
+    {
+      "rank": 7,
+      "joint": "HipRight",
+      "mean_attention": 0.6981859420782622,
+      "std_attention": 0.011367650592905756
+    },
+    {
+      "rank": 8,
+      "joint": "ElbowRight",
+      "mean_attention": 0.6908970549702644,
+      "std_attention": 0.015041510796758292
+    },
+    {
+      "rank": 9,
+      "joint": "HipLeft",
+      "mean_attention": 0.6884866393412705,
+      "std_attention": 0.010709349380089626
+    },
+    {
+      "rank": 10,
+      "joint": "ShoulderRight",
+      "mean_attention": 0.6817373178531358,
+      "std_attention": 0.007436444382942249
+    }
+  ],
+  "all_joint_mean": {
+    "SpineBase": 0.7789616573969891,
+    "SpineMid": 0.6780967550053273,
+    "Neck": 0.6698658102088504,
+    "Head": 0.5056751788720305,
+    "ShoulderLeft": 0.6739388786854199,
+    "ElbowLeft": 0.6799391544665452,
+    "WristLeft": 0.752584067851673,
+    "HandLeft": 0.6639193012896512,
+    "ShoulderRight": 0.6817373178531358,
+    "ElbowRight": 0.6908970549702644,
+    "WristRight": 0.7530913778385262,
+    "HandRight": 0.6619772400798989,
+    "HipLeft": 0.6884866393412705,
+    "KneeLeft": 0.7017329936548148,
+    "AnkleLeft": 0.6673835775596492,
+    "FootLeft": 0.4503486007452011,
+    "HipRight": 0.6981859420782622,
+    "KneeRight": 0.7023654682676733,
+    "AnkleRight": 0.660157145794343,
+    "FootRight": 0.45141836369617117,
+    "SpineShoulder": 0.8053911828010538,
+    "HandTipLeft": 0.4927679249487909,
+    "ThumbLeft": 0.48844416354449444,
+    "HandTipRight": 0.49016624919058366,
+    "ThumbRight": 0.481312764843029
+  },
+  "all_joint_std": {
+    "SpineBase": 0.009252768678553302,
+    "SpineMid": 0.003160516277296198,
+    "Neck": 0.0010755905959724259,
+    "Head": 0.0017045192271853981,
+    "ShoulderLeft": 0.006197891521049891,
+    "ElbowLeft": 0.010273457236151133,
+    "WristLeft": 0.003220088026509047,
+    "HandLeft": 0.003642236343810325,
+    "ShoulderRight": 0.007436444382942249,
+    "ElbowRight": 0.015041510796758292,
+    "WristRight": 0.003928316727084609,
+    "HandRight": 0.003971003295387411,
+    "HipLeft": 0.010709349380089626,
+    "KneeLeft": 0.013315757693218888,
+    "AnkleLeft": 0.008731666802013083,
+    "FootLeft": 0.018053481786074535,
+    "HipRight": 0.011367650592905756,
+    "KneeRight": 0.01478825729587954,
+    "AnkleRight": 0.0072407990783976105,
+    "FootRight": 0.01645841281513351,
+    "SpineShoulder": 0.0022034304381964593,
+    "HandTipLeft": 0.007092721218333853,
+    "ThumbLeft": 0.010301472885793701,
+    "HandTipRight": 0.008395763575025144,
+    "ThumbRight": 0.013801111848176442
+  },
+  "class_diff": {
+    "healthy_top_joint": "SpineShoulder",
+    "compensated_top_joint": "SpineShoulder",
+    "healthy_mean_attn": {
+      "SpineBase": 0.7786718409810615,
+      "SpineMid": 0.6784931093584629,
+      "Neck": 0.6698311693810791,
+      "Head": 0.5056303055787793,
+      "ShoulderLeft": 0.6737734278525583,
+      "ElbowLeft": 0.6807755455049049,
+      "WristLeft": 0.7525385160247002,
+      "HandLeft": 0.6635456196945695,
+      "ShoulderRight": 0.6815656137269582,
+      "ElbowRight": 0.6904634673830489,
+      "WristRight": 0.7530846538446435,
+      "HandRight": 0.6619213680262239,
+      "HipLeft": 0.688308698972375,
+      "KneeLeft": 0.7007667629564776,
+      "AnkleLeft": 0.6659820056065823,
+      "FootLeft": 0.45350734066650555,
+      "HipRight": 0.6968831561212693,
+      "KneeRight": 0.7009286362028284,
+      "AnkleRight": 0.6594493671665498,
+      "FootRight": 0.4535489822979863,
+      "SpineShoulder": 0.8051417416134409,
+      "HandTipLeft": 0.49238312458633043,
+      "ThumbLeft": 0.4878432210525765,
+      "HandTipRight": 0.48985341435905333,
+      "ThumbRight": 0.48100776062132145
+    },
+    "compensated_mean_attn": {
+      "SpineBase": 0.7800812296303754,
+      "SpineMid": 0.6765656225229517,
+      "Neck": 0.6699996290913666,
+      "Head": 0.5058485261718507,
+      "ShoulderLeft": 0.674578021771465,
+      "ElbowLeft": 0.6767081429318684,
+      "WristLeft": 0.7527600363539934,
+      "HandLeft": 0.6653628480143663,
+      "ShoulderRight": 0.6824006176576382,
+      "ElbowRight": 0.6925720209028663,
+      "WristRight": 0.7531173528918182,
+      "HandRight": 0.6621930760245833,
+      "HipLeft": 0.6891740299970974,
+      "KneeLeft": 0.7054655809116185,
+      "AnkleLeft": 0.6727979052357558,
+      "FootLeft": 0.43814626397603446,
+      "HipRight": 0.7032186555594038,
+      "KneeRight": 0.7079160071448135,
+      "AnkleRight": 0.662891322519721,
+      "FootRight": 0.44318770009178604,
+      "SpineShoulder": 0.806354783936692,
+      "HandTipLeft": 0.49425442390996566,
+      "ThumbLeft": 0.4907656280676822,
+      "HandTipRight": 0.49137474247036017,
+      "ThumbRight": 0.48249100816853724
+    }
+  },
+  "entropy": {
+    "mean_joint_entropy": 3.204480069875461,
+    "std_joint_entropy": 0.0013844868824858035,
+    "mean_frame_entropy": 4.11392732535117,
+    "std_frame_entropy": 0.04598064145080357,
+    "mean_joint_variance": 0.011252459996312345
+  },
+  "temporal": {
+    "mean_peak_frame": 23.300925925925927,
+    "std_peak_frame": 23.81690768624789
+  }
+}

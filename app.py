@@ -17,7 +17,7 @@ try:
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles
     HAS_MEDIAPIPE = True
-except ImportError:
+except (ImportError, AttributeError):
     HAS_MEDIAPIPE = False
     mp_pose = None
     mp_drawing = None

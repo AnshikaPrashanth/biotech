@@ -90,8 +90,8 @@ def train_one_epoch(
     correct = 0
     
     for batch in loader:
-        sequences = batch['sequence'].to(device)
-        labels = batch['label'].to(device)
+        sequences = batch['sequence'].to(device, non_blocking=True)
+        labels = batch['label'].to(device, non_blocking=True)
         optimizer.zero_grad()
         
         if hasattr(torch, 'amp'):
@@ -134,8 +134,8 @@ def evaluate(
     
     with torch.no_grad():
         for batch in loader:
-            sequences = batch['sequence'].to(device)
-            labels = batch['label'].to(device)
+            sequences = batch['sequence'].to(device, non_blocking=True)
+            labels = batch['label'].to(device, non_blocking=True)
             
             outputs = model(sequences)
             logits = outputs['logits']
@@ -292,6 +292,12 @@ def main() -> None:
     os.makedirs(LOG_DIR, exist_ok=True)
     
     device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
+    # Enable cuDNN benchmark for fixed-size inputs (no-op on CPU)
+    if device.type == 'cuda':
+        torch.backends.cudnn.benchmark = True
+        torch.backends.cudnn.enabled = True
+        props = torch.cuda.get_device_properties(device)
+        print(f"GPU: {props.name} ({props.total_memory / 1024**3:.1f} GB VRAM)")
     print(f"Using execution device: {device}")
     
     print(f"Scanning data from: {args.data_dir}")
@@ -346,12 +352,14 @@ def main() -> None:
         
         sampler = make_weighted_sampler(subject_entries_train, target_key='movement_label')
         
+        pin_mem = device.type == 'cuda'
         train_loader = DataLoader(
             train_dataset,
             batch_size=args.batch_size,
             sampler=sampler,
             num_workers=TRAINING_CONFIG['num_workers'],
             collate_fn=sequence_collate_fn,
+            pin_memory=pin_mem,
         )
         val_loader = DataLoader(
             val_dataset,
@@ -359,6 +367,7 @@ def main() -> None:
             shuffle=False,
             num_workers=TRAINING_CONFIG['num_workers'],
             collate_fn=sequence_collate_fn,
+            pin_memory=pin_mem,
         )
         
         model = build_model().to(device)

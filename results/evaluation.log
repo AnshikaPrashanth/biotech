@@ -1,0 +1,99 @@
+2026-08-09 07:18:27,117 [INFO] Device: cuda
+2026-08-09 07:18:27,118 [INFO] Loading dataset from: C:\internship\biotech\SkeletonData\SkeletonData\RawData
+2026-08-09 07:19:26,683 [INFO] Loaded 2592 samples in 59.6s
+2026-08-09 07:19:26,686 [INFO] Class distribution: {0: 2059, 1: 533}
+2026-08-09 07:19:29,082 [INFO] Loaded checkpoint: checkpoints/best_model.pt
+2026-08-09 07:19:29,083 [INFO] Running inference on 2592 samples...
+2026-08-09 07:19:33,329 [INFO] Inference complete: 4.2s (2592 samples)
+2026-08-09 07:19:33,329 [INFO] ============================================================
+2026-08-09 07:19:33,330 [INFO] PART 1 — Complete Model Evaluation
+2026-08-09 07:19:33,331 [INFO] ============================================================
+2026-08-09 07:19:33,403 [INFO]   Accuracy:          0.8534
+2026-08-09 07:19:33,403 [INFO]   Balanced Accuracy: 0.8368
+2026-08-09 07:19:33,403 [INFO]   F1 (macro):        0.7988
+2026-08-09 07:19:33,403 [INFO]   ROC-AUC:           0.9319
+2026-08-09 07:19:33,404 [INFO]   PR-AUC:            0.8004
+2026-08-09 07:19:33,404 [INFO]   MCC:               0.6107
+2026-08-09 07:19:33,404 [INFO]   Cohen Kappa:       0.6002
+2026-08-09 07:19:33,404 [INFO]   Sensitivity:       0.8086
+2026-08-09 07:19:33,404 [INFO]   Specificity:       0.8650
+2026-08-09 07:19:33,404 [INFO]   TP=431  TN=1781  FP=278  FN=102
+2026-08-09 07:19:34,102 [INFO]   Saved: C:\internship\biotech\results\confusion_matrix.png
+2026-08-09 07:19:34,551 [INFO]   Saved: C:\internship\biotech\results\roc_curve.png
+2026-08-09 07:19:34,975 [INFO]   Saved: C:\internship\biotech\results\pr_curve.png
+2026-08-09 07:19:35,478 [INFO]   Saved: C:\internship\biotech\results\figures\confidence_histogram.png
+2026-08-09 07:19:35,479 [INFO]   Part 1 complete.
+2026-08-09 07:19:35,479 [INFO] ============================================================
+2026-08-09 07:19:35,479 [INFO] PART 2 — Subject-Wise LOSO Analysis
+2026-08-09 07:19:35,480 [INFO] ============================================================
+2026-08-09 07:19:36,221 [INFO]   Best subjects:
+subject_id  accuracy  f1_macro  roc_auc
+       106       1.0       0.5      1.0
+       303       1.0       0.5      1.0
+       306       1.0       0.5      1.0
+2026-08-09 07:19:36,224 [INFO]   Worst subjects:
+subject_id  accuracy  f1_macro  roc_auc
+       210    0.2647    0.2589   0.8095
+       212    0.4808    0.3247   0.4516
+       202    0.5586    0.4670   0.6007
+2026-08-09 07:19:36,240 [INFO] 
+  LOSO Statistics (accuracy): mean=0.8205 std=0.1860
+2026-08-09 07:19:42,012 [INFO]   Saved figure: C:\internship\biotech\results\figures\subject_barplots.png
+2026-08-09 07:19:49,771 [INFO]   Saved figure: C:\internship\biotech\results\figures\subject_heatmap.png
+2026-08-09 07:19:49,772 [INFO]   Part 2 complete.
+2026-08-09 07:19:49,772 [INFO] ============================================================
+2026-08-09 07:19:49,773 [INFO] PART 3 — Failure Analysis
+2026-08-09 07:19:49,773 [INFO] ============================================================
+2026-08-09 07:19:49,774 [INFO]   Total failures: 380 / 2592
+2026-08-09 07:19:49,953 [INFO]   FP: 278  FN: 102
+2026-08-09 07:19:49,953 [INFO]   Part 3 complete.
+2026-08-09 07:19:49,954 [INFO] ============================================================
+2026-08-09 07:19:49,955 [INFO] PART 4 — Failure Reasoning Statistics
+2026-08-09 07:19:49,955 [INFO] ============================================================
+2026-08-09 07:19:50,037 [INFO]   Top failure causes:
+2026-08-09 07:19:50,038 [INFO]     380x  High attention entropy (model uncertain which joints are informative)
+2026-08-09 07:19:50,038 [INFO]     379x  Flat temporal attention (no dominant movement phase)
+2026-08-09 07:19:50,039 [INFO]     278x  Atypical healthy motion (possibly noisy skeleton or edge-case style)
+2026-08-09 07:19:50,039 [INFO]     157x  Low confidence (borderline prediction)
+2026-08-09 07:19:50,039 [INFO]     102x  Subtle compensatory pattern (compensation resembles healthy motion)
+2026-08-09 07:19:51,052 [INFO]   Saved figure: C:\internship\biotech\results\figures\failure_causes.png
+2026-08-09 07:19:51,053 [INFO]   Part 4 complete.
+2026-08-09 07:19:51,054 [INFO] ============================================================
+2026-08-09 07:19:51,055 [INFO] PART 5 — ROM Validation
+2026-08-09 07:19:51,055 [INFO] ============================================================
+2026-08-09 07:21:37,400 [INFO]   elbow_left           mean=35.4 deg  ROM=[0.0, 170.0]
+2026-08-09 07:21:37,405 [INFO]   elbow_right          mean=34.7 deg  ROM=[0.0, 177.1]
+2026-08-09 07:21:37,409 [INFO]   hip_left             mean=8.7 deg  ROM=[0.0, 59.0]
+2026-08-09 07:21:37,413 [INFO]   hip_right            mean=9.2 deg  ROM=[0.0, 61.2]
+2026-08-09 07:21:37,416 [INFO]   knee_left            mean=8.4 deg  ROM=[0.0, 118.6]
+2026-08-09 07:21:37,418 [INFO]   knee_right           mean=8.9 deg  ROM=[0.0, 79.1]
+2026-08-09 07:21:37,421 [INFO]   shoulder_left        mean=23.3 deg  ROM=[0.0, 127.2]
+2026-08-09 07:21:37,422 [INFO]   shoulder_right       mean=22.2 deg  ROM=[0.0, 166.3]
+2026-08-09 07:21:37,430 [WARNING]   Detected 2286 anatomically impossible ROM values
+2026-08-09 07:21:43,663 [INFO]   Saved figure: C:\internship\biotech\results\figures\rom_histograms.png
+2026-08-09 07:21:45,298 [INFO]   Saved figure: C:\internship\biotech\results\figures\joint_boxplots.png
+2026-08-09 07:21:45,298 [INFO]   Part 5 complete.
+2026-08-09 07:21:45,304 [INFO] ============================================================
+2026-08-09 07:21:45,304 [INFO] PART 6 — Explainability Validation
+2026-08-09 07:21:45,305 [INFO] ============================================================
+2026-08-09 07:21:45,926 [INFO]   Top joint: SpineShoulder (mean=0.8054)
+2026-08-09 07:21:45,926 [INFO]   Mean joint entropy: 3.2045
+2026-08-09 07:21:45,927 [INFO]   Mean frame entropy: 4.1139
+2026-08-09 07:21:49,891 [INFO]   Saved figure: C:\internship\biotech\results\figures\attention_heatmaps.png
+2026-08-09 07:21:50,914 [INFO]   Saved figure: C:\internship\biotech\results\figures\temporal_attention.png
+2026-08-09 07:21:52,905 [INFO]   Saved figure: C:\internship\biotech\results\figures\attention_entropy.png
+2026-08-09 07:21:52,906 [INFO]   Part 6 complete.
+2026-08-09 07:21:52,912 [INFO] ============================================================
+2026-08-09 07:21:52,912 [INFO] PART 7 — Calibration Analysis
+2026-08-09 07:21:52,913 [INFO] ============================================================
+2026-08-09 07:21:52,924 [INFO]   ECE: 0.0335
+2026-08-09 07:21:52,924 [INFO]   MCE: 0.1161
+2026-08-09 07:21:54,798 [INFO]   Saved figure: C:\internship\biotech\results\figures\calibration_reliability.png
+2026-08-09 07:21:56,082 [INFO]   Saved figure: C:\internship\biotech\results\figures\confidence_by_class.png
+2026-08-09 07:26:58,726 [INFO]   Part 7 complete.
+2026-08-09 07:26:58,727 [INFO] ============================================================
+2026-08-09 07:26:58,727 [INFO] PART 8 — Baseline Models
+2026-08-09 07:26:58,727 [INFO] ============================================================
+2026-08-09 07:26:59,913 [WARNING]   xgboost not installed — skipping XGBoost baseline
+2026-08-09 07:27:00,005 [INFO]   Training baseline: Random Forest
+2026-08-09 07:30:08,241 [INFO]   Training baseline: Gradient Boosting

@@ -1,0 +1,6 @@
+position,errors,total,error_rate
+Stand-frame,15,52,0.2885
+chair,98,844,0.1161
+sit,1,110,0.0091
+stand,160,1225,0.1306
+wheelchair,106,361,0.2936
