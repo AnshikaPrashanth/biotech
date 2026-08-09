@@ -80,6 +80,16 @@ def get_database(db_path: str) -> SQLiteSessionDB:
     """Creates and caches a single persistent DB connection."""
     return SQLiteSessionDB(db_path)
 
+@st.cache_data(show_spinner="Scanning dataset...")
+def load_dataset_entries(data_dir: str):
+    """Scans the skeleton data directory once and caches the result."""
+    return load_intellirehab_directory(data_dir)
+
+@st.cache_resource
+def get_calibrator(baseline_path: Optional[str]) -> PersonalizedROMCalibrator:
+    """Creates and caches the ROM calibrator."""
+    return PersonalizedROMCalibrator(baseline_path=baseline_path)
+
 def predict_sequence(model: STGAT, sequence: np.ndarray) -> Dict[str, object]:
     """Runs a 3D skeleton sequence through the model to obtain binary predictions and attention weights."""
     device = torch.device('cpu')
@@ -118,26 +128,27 @@ def main() -> None:
     
     # DB Instance (cached - single connection across reruns)
     db = get_database(str(DB_PATH))
-    
-    # Initialize Calibrator
-    calibrator = PersonalizedROMCalibrator(baseline_path=str(BASELINE_FILE_PATH) if BASELINE_FILE_PATH.exists() else None)
-    
-    # Load model
+
+    # Load model (cached)
     model = load_model(MODEL_WEIGHTS_PATH)
-    
-    # Model load status (shown here, not inside cache_resource)
+
+    # Model load status
     if MODEL_WEIGHTS_PATH.exists():
         st.sidebar.success("✅ Model weights loaded")
     else:
         st.sidebar.warning("⚠️ No model weights — using random init")
 
-    # Scan dataset subjects
+    # Scan dataset subjects (cached - only runs once, not on every rerun)
     if DATA_DIR.exists():
-        entries = load_intellirehab_directory(str(DATA_DIR))
+        entries = load_dataset_entries(str(DATA_DIR))
         subjects = sorted(list({entry['subject_id'] for entry in entries}))
     else:
         entries = []
         subjects = ["101", "102", "103", "104", "105"]
+
+    # Initialize Calibrator (cached)
+    baseline_path = str(BASELINE_FILE_PATH) if BASELINE_FILE_PATH.exists() else None
+    calibrator = get_calibrator(baseline_path)
         
     # Sidebar
     st.sidebar.header('🧬 Biotech Rehab System')
