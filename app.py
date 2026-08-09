@@ -80,10 +80,44 @@ def get_database(db_path: str) -> SQLiteSessionDB:
     """Creates and caches a single persistent DB connection."""
     return SQLiteSessionDB(db_path)
 
-@st.cache_data(show_spinner="Scanning dataset...")
-def load_dataset_entries(data_dir: str):
-    """Scans the skeleton data directory once and caches the result."""
-    return load_intellirehab_directory(data_dir)
+@st.cache_data(show_spinner=False)
+def get_subjects_fast(data_dir: str) -> List[str]:
+    """Instantly extracts subject IDs from filenames only — no file parsing.
+    Subject ID is the leading digits before the first '_' in each filename.
+    This replaces the 14-second full parse that was blocking the event loop.
+    """
+    import glob, re
+    pattern = os.path.join(data_dir, '**', '*.txt')
+    files = glob.glob(pattern, recursive=True)
+    subjects: set = set()
+    for f in files:
+        m = re.match(r'^(\d+)_', os.path.basename(f))
+        if m:
+            subjects.add(m.group(1))
+    return sorted(subjects)
+
+@st.cache_data(show_spinner="Loading subject trials...")
+def load_subject_entries(data_dir: str, subject_id: str) -> List[Dict]:
+    """Parses only the files for a specific subject (used by calibration).
+    Much faster than loading all 5185 files at startup.
+    """
+    import glob, re
+    pattern = os.path.join(data_dir, '**', f'{subject_id}_*.txt')
+    files = glob.glob(pattern, recursive=True)
+    entries = []
+    for fp in files:
+        try:
+            sequence, exercise_type, sid, movement_label = parse_intellirehab_file(fp)
+            entries.append({
+                'sequence': sequence,
+                'exercise_type': exercise_type,
+                'subject_id': sid,
+                'movement_label': movement_label,
+                'file_path': fp
+            })
+        except Exception:
+            pass
+    return entries
 
 @st.cache_resource
 def get_calibrator(baseline_path: Optional[str]) -> PersonalizedROMCalibrator:
@@ -138,12 +172,12 @@ def main() -> None:
     else:
         st.sidebar.warning("⚠️ No model weights — using random init")
 
-    # Scan dataset subjects (cached - only runs once, not on every rerun)
+    # Get subjects instantly from filenames (no file parsing, ~instant)
     if DATA_DIR.exists():
-        entries = load_dataset_entries(str(DATA_DIR))
-        subjects = sorted(list({entry['subject_id'] for entry in entries}))
+        subjects = get_subjects_fast(str(DATA_DIR))
+        if not subjects:
+            subjects = ["101", "102", "103", "104", "105"]
     else:
-        entries = []
         subjects = ["101", "102", "103", "104", "105"]
 
     # Initialize Calibrator (cached)
@@ -365,17 +399,21 @@ def main() -> None:
         st.markdown("---")
         st.subheader("🆕 Calibrate Patient Baseline")
         
-        # Select trials files of this patient that are healthy
-        subject_healthy_trials = [
-            e for e in entries 
-            if e['subject_id'] == selected_subject and e['movement_label'] == 0
-        ]
-        
+        # Load only THIS subject's trials (lazy, on-demand — not all 5185 files)
+        if DATA_DIR.exists():
+            subject_entries = load_subject_entries(str(DATA_DIR), selected_subject)
+            subject_healthy_trials = [
+                e for e in subject_entries
+                if e['movement_label'] == 0
+            ]
+        else:
+            subject_healthy_trials = []
+
         st.write(f"Found **{len(subject_healthy_trials)}** healthy trials for subject **{selected_subject}** in the RawData dataset directory.")
-        
+
         if len(subject_healthy_trials) < 2:
             st.warning("At least 2 healthy trials are recommended in the raw dataset directory to build a robust template.")
-            
+
         if st.button("🧬 Run Calibration Optimization"):
             if not subject_healthy_trials:
                 st.error("No healthy trials found to fit a template. Make sure raw data includes subject files.")
@@ -383,7 +421,6 @@ def main() -> None:
                 with st.spinner("Aligning sequences using DTW and smoothing with Savitzky-Golay..."):
                     sequences_pool = [e['sequence'] for e in subject_healthy_trials]
                     calibrator.fit(selected_subject, sequences_pool)
-                    # Persist baseline
                     calibrator.save(str(BASELINE_FILE_PATH))
                 st.success(f"Fitted patient {selected_subject} baseline calibration successfully and saved to disk!")
                 if hasattr(st, "rerun"):
