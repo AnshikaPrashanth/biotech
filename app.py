@@ -1,3 +1,11 @@
+import asyncio
+import sys
+
+# Fix for Python 3.13 on Windows: ProactorEventLoop causes WinError 10054
+# with Streamlit/uvicorn pipe transport. Force SelectorEventLoop instead.
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 import os
 import json
 import time
