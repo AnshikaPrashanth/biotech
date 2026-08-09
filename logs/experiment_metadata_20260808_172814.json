@@ -1,0 +1,86 @@
+{
+  "timestamp": "20260808_172813",
+  "parameters": {
+    "paths": {
+      "data_dir": "SkeletonData/SkeletonData/RawData",
+      "checkpoint_dir": "checkpoints",
+      "log_dir": "logs",
+      "baseline_dir": "baselines",
+      "db_path": "rehab_sessions.db",
+      "model_weights": "checkpoints/st_gat_loso.pt",
+      "best_model_weights": "checkpoints/best_model.pt"
+    },
+    "training": {
+      "seed": 42,
+      "batch_size": 64,
+      "epochs": 80,
+      "lr": 0.0002,
+      "weight_decay": 0.0001,
+      "num_workers": 0,
+      "patience": 8,
+      "early_stopping_delta": 0.001,
+      "sequence_length": 64,
+      "hidden_dim": 64,
+      "heads": 4,
+      "dropout": 0.2,
+      "loss_type": "weighted_ce",
+      "focal_gamma": 2.0,
+      "device": "cuda"
+    },
+    "model": {
+      "num_joints": 25,
+      "input_dim": 3,
+      "num_classes": 2,
+      "heads": 4,
+      "dropout": 0.2
+    }
+  },
+  "subjects": [
+    "101",
+    "102",
+    "103"
+  ],
+  "folds_evaluated": [
+    "101",
+    "102",
+    "103"
+  ],
+  "fold_metrics": {
+    "101": {
+      "accuracy": 0.5,
+      "balanced_accuracy": 0.5,
+      "precision_macro": 0.25,
+      "recall_macro": 0.5,
+      "f1_macro": 0.3333333333333333,
+      "mcc": 0.0,
+      "cohen_kappa": 0.0
+    },
+    "102": {
+      "accuracy": 0.5,
+      "balanced_accuracy": 0.5,
+      "precision_macro": 0.25,
+      "recall_macro": 0.5,
+      "f1_macro": 0.3333333333333333,
+      "mcc": 0.0,
+      "cohen_kappa": 0.0
+    },
+    "103": {
+      "accuracy": 0.5,
+      "balanced_accuracy": 0.5,
+      "precision_macro": 0.25,
+      "recall_macro": 0.5,
+      "f1_macro": 0.3333333333333333,
+      "mcc": 0.0,
+      "cohen_kappa": 0.0
+    }
+  },
+  "overall_averages": {
+    "accuracy": 0.5,
+    "balanced_accuracy": 0.5,
+    "precision_macro": 0.25,
+    "recall_macro": 0.5,
+    "f1_macro": 0.3333333333333333,
+    "mcc": 0.0,
+    "cohen_kappa": 0.0
+  }
+}
