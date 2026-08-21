@@ -15,7 +15,14 @@ CREATE TABLE IF NOT EXISTS sessions (
     attention_json TEXT NOT NULL,
     rom_deviation_json TEXT,
     session_duration REAL DEFAULT 0.0,
-    notes TEXT
+    notes TEXT,
+    movement_quality REAL,
+    uncertainty REAL,
+    decision_status TEXT,
+    rom_score REAL,
+    symmetry_score REAL,
+    top_error_joints TEXT,
+    repetition_stats TEXT
 );
 '''
 
@@ -27,10 +34,37 @@ class SQLiteSessionDB:
         self.connection = sqlite3.connect(str(self.db_path), check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
         self._create_tables()
+        self._run_migrations()
 
     def _create_tables(self) -> None:
         with self.connection:
             self.connection.executescript(DB_SCHEMA)
+
+    def _run_migrations(self) -> None:
+        """Checks if database contains new schema columns, adding them dynamically if missing."""
+        cursor = self.connection.cursor()
+        cursor.execute("PRAGMA table_info(sessions)")
+        columns = [row['name'] for row in cursor.fetchall()]
+        
+        # New columns to add if they do not exist
+        new_cols = {
+            'movement_quality': 'REAL',
+            'uncertainty': 'REAL',
+            'decision_status': 'TEXT',
+            'rom_score': 'REAL',
+            'symmetry_score': 'REAL',
+            'top_error_joints': 'TEXT',
+            'repetition_stats': 'TEXT'
+        }
+        
+        for col_name, col_type in new_cols.items():
+            if col_name not in columns:
+                try:
+                    with self.connection:
+                        self.connection.execute(f"ALTER TABLE sessions ADD COLUMN {col_name} {col_type};")
+                except sqlite3.OperationalError as e:
+                    # Column might have been added in parallel thread/session
+                    pass
 
     def log_session(
         self,
@@ -42,25 +76,41 @@ class SQLiteSessionDB:
         rom_deviation: Optional[Dict[str, float]] = None,
         session_duration: float = 0.0,
         notes: Optional[str] = None,
+        movement_quality: Optional[float] = None,
+        uncertainty: Optional[float] = None,
+        rom_score: Optional[float] = None,
+        symmetry_score: Optional[float] = None,
+        top_error_joints: Optional[List] = None,
+        repetition_stats: Optional[Dict] = None
     ) -> int:
         attention_json = json.dumps(attention_map)
         rom_deviation_json = json.dumps(rom_deviation) if rom_deviation is not None else '{}'
+        top_err_json = json.dumps(top_error_joints) if top_error_joints is not None else '[]'
+        rep_stats_json = json.dumps(repetition_stats) if repetition_stats is not None else '{}'
         timestamp = datetime.now(timezone.utc).isoformat()
+        
+        # decision_status falls back to verdict
+        decision_status = verdict if verdict in ["Healthy", "Compensated", "Uncertain / Human Review"] else verdict
+        
         with self.connection:
             cursor = self.connection.execute(
                 '''INSERT INTO sessions 
-                   (timestamp, subject_id, exercise_type, confidence, verdict, attention_json, rom_deviation_json, session_duration, notes) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                (timestamp, subject_id, exercise_type, confidence, verdict, attention_json, rom_deviation_json, session_duration, notes),
+                   (timestamp, subject_id, exercise_type, confidence, verdict, attention_json, rom_deviation_json, 
+                    session_duration, notes, movement_quality, uncertainty, decision_status, rom_score, symmetry_score, 
+                    top_error_joints, repetition_stats) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                (timestamp, subject_id, exercise_type, confidence, verdict, attention_json, rom_deviation_json,
+                 session_duration, notes, movement_quality, uncertainty, decision_status, rom_score, symmetry_score,
+                 top_err_json, rep_stats_json),
             )
         return cursor.lastrowid
 
     def get_weekly_trends(self, subject_id: Optional[str] = None) -> List[Dict[str, object]]:
-        """Averages confidence scores grouped by week."""
+        """Averages movement quality scores grouped by week."""
         query = '''
         SELECT 
             strftime('%Y-%W', timestamp) AS week,
-            AVG(confidence) AS average_confidence,
+            AVG(COALESCE(movement_quality, confidence * 100)) AS average_confidence,
             COUNT(*) AS sessions
         FROM sessions
         '''
@@ -74,11 +124,11 @@ class SQLiteSessionDB:
         return [dict(row) for row in cursor.fetchall()]
 
     def get_monthly_trends(self, subject_id: Optional[str] = None) -> List[Dict[str, object]]:
-        """Averages confidence scores grouped by month."""
+        """Averages movement quality scores grouped by month."""
         query = '''
         SELECT 
             strftime('%Y-%m', timestamp) AS month,
-            AVG(confidence) AS average_confidence,
+            AVG(COALESCE(movement_quality, confidence * 100)) AS average_confidence,
             COUNT(*) AS sessions
         FROM sessions
         '''
@@ -110,9 +160,9 @@ class SQLiteSessionDB:
         return [dict(row) for row in cursor.fetchall()]
 
     def get_best_improvement(self, subject_id: str) -> Dict[str, object]:
-        """Calculates the progress score difference between initial and latest sessions."""
+        """Calculates the movement quality difference between initial and latest sessions."""
         query = '''
-        SELECT confidence, timestamp FROM sessions
+        SELECT COALESCE(movement_quality, confidence * 100) AS quality, timestamp FROM sessions
         WHERE subject_id = ?
         ORDER BY timestamp ASC
         '''
@@ -121,13 +171,13 @@ class SQLiteSessionDB:
         if len(rows) < 2:
             return {'improvement': 0.0, 'sessions_tracked': len(rows)}
         
-        initial_confidence = rows[0]['confidence']
-        latest_confidence = rows[-1]['confidence']
-        improvement = latest_confidence - initial_confidence
+        initial_val = rows[0]['quality']
+        latest_val = rows[-1]['quality']
+        improvement = latest_val - initial_val
         return {
-            'initial_confidence': initial_confidence,
-            'latest_confidence': latest_confidence,
-            'improvement': float(improvement),
+            'initial_confidence': initial_val / 100.0,
+            'latest_confidence': latest_val / 100.0,
+            'improvement': float(improvement / 100.0),
             'sessions_tracked': len(rows)
         }
 

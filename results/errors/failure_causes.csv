@@ -1,7 +1,7 @@
 reason,count
-High attention entropy (model uncertain which joints are informative),380
-Flat temporal attention (no dominant movement phase),379
-Atypical healthy motion (possibly noisy skeleton or edge-case style),278
+High attention entropy (model uncertain which joints are informative),376
+Flat temporal attention (no dominant movement phase),375
+Atypical healthy motion (possibly noisy skeleton or edge-case style),275
 Low confidence (borderline prediction),157
-Subtle compensatory pattern (compensation resembles healthy motion),102
-Near-equal class probabilities (ambiguous motion),84
+Subtle compensatory pattern (compensation resembles healthy motion),101
+Near-equal class probabilities (ambiguous motion),82

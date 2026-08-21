@@ -2,9 +2,9 @@ ST-GAT Rehabilitation Assessment — Classification Report
 =======================================================
               precision    recall  f1-score   support
 
-     Healthy       0.95      0.86      0.90      2059
- Compensated       0.61      0.81      0.69       533
+     Healthy       0.95      0.87      0.90      2059
+ Compensated       0.61      0.81      0.70       530
 
-    accuracy                           0.85      2592
-   macro avg       0.78      0.84      0.80      2592
-weighted avg       0.88      0.85      0.86      2592
+    accuracy                           0.85      2589
+   macro avg       0.78      0.84      0.80      2589
+weighted avg       0.88      0.85      0.86      2589

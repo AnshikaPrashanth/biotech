@@ -97,3 +97,659 @@ subject_id  accuracy  f1_macro  roc_auc
 2026-08-09 07:26:59,913 [WARNING]   xgboost not installed — skipping XGBoost baseline
 2026-08-09 07:27:00,005 [INFO]   Training baseline: Random Forest
 2026-08-09 07:30:08,241 [INFO]   Training baseline: Gradient Boosting
+2026-08-10 12:15:29,945 [INFO] Device: cpu
+2026-08-10 12:15:29,947 [INFO] Loading dataset from: E:\INTERNSHIP COE\SkeletonData\SkeletonData\RawData
+2026-08-10 12:17:05,470 [INFO] Loaded 2589 samples in 95.5s
+2026-08-10 12:17:05,472 [INFO] Class distribution: {0: 2059, 1: 530}
+2026-08-10 12:17:05,643 [INFO] Loaded checkpoint: checkpoints/best_model.pt
+2026-08-10 12:17:05,644 [INFO] Running inference on 2589 samples...
+2026-08-10 12:17:43,100 [INFO] Inference complete: 37.5s (2589 samples)
+2026-08-10 12:17:43,100 [INFO] ============================================================
+2026-08-10 12:17:43,100 [INFO] PART 1 — Complete Model Evaluation
+2026-08-10 12:17:43,101 [INFO] ============================================================
+2026-08-10 12:17:43,207 [INFO]   Accuracy:          0.8548
+2026-08-10 12:17:43,208 [INFO]   Balanced Accuracy: 0.8379
+2026-08-10 12:17:43,209 [INFO]   F1 (macro):        0.8000
+2026-08-10 12:17:43,209 [INFO]   ROC-AUC:           0.9321
+2026-08-10 12:17:43,209 [INFO]   PR-AUC:            0.8008
+2026-08-10 12:17:43,210 [INFO]   MCC:               0.6129
+2026-08-10 12:17:43,210 [INFO]   Cohen Kappa:       0.6024
+2026-08-10 12:17:43,210 [INFO]   Sensitivity:       0.8094
+2026-08-10 12:17:43,211 [INFO]   Specificity:       0.8664
+2026-08-10 12:17:43,211 [INFO]   TP=429  TN=1784  FP=275  FN=101
+2026-08-10 12:17:44,009 [INFO]   Saved: E:\INTERNSHIP COE\results\confusion_matrix.png
+2026-08-10 12:17:44,462 [INFO]   Saved: E:\INTERNSHIP COE\results\roc_curve.png
+2026-08-10 12:17:44,782 [INFO]   Saved: E:\INTERNSHIP COE\results\pr_curve.png
+2026-08-10 12:17:45,131 [INFO]   Saved: E:\INTERNSHIP COE\results\figures\confidence_histogram.png
+2026-08-10 12:17:45,131 [INFO]   Part 1 complete.
+2026-08-10 12:17:45,133 [INFO] ============================================================
+2026-08-10 12:17:45,133 [INFO] PART 2 — Subject-Wise LOSO Analysis
+2026-08-10 12:17:45,133 [INFO] ============================================================
+2026-08-10 12:17:45,555 [INFO]   Best subjects:
+subject_id  accuracy  f1_macro  roc_auc
+       106       1.0       0.5      1.0
+       303       1.0       0.5      1.0
+       306       1.0       0.5      1.0
+2026-08-10 12:17:45,557 [INFO]   Worst subjects:
+subject_id  accuracy  f1_macro  roc_auc
+       210    0.2647    0.2589   0.8095
+       212    0.4808    0.3247   0.4516
+       202    0.5586    0.4670   0.6007
+2026-08-10 12:17:45,559 [INFO] 
+  LOSO Statistics (accuracy): mean=0.8220 std=0.1866
+2026-08-10 12:17:45,567 [WARNING]   Excel save failed: No module named 'openpyxl'
+2026-08-10 12:17:50,842 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\subject_barplots.png
+2026-08-10 12:17:57,342 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\subject_heatmap.png
+2026-08-10 12:17:57,342 [INFO]   Part 2 complete.
+2026-08-10 12:17:57,343 [INFO] ============================================================
+2026-08-10 12:17:57,343 [INFO] PART 3 — Failure Analysis
+2026-08-10 12:17:57,344 [INFO] ============================================================
+2026-08-10 12:17:57,345 [INFO]   Total failures: 376 / 2589
+2026-08-10 12:17:57,394 [INFO]   FP: 275  FN: 101
+2026-08-10 12:17:57,394 [INFO]   Part 3 complete.
+2026-08-10 12:17:57,394 [INFO] ============================================================
+2026-08-10 12:17:57,394 [INFO] PART 4 — Failure Reasoning Statistics
+2026-08-10 12:17:57,394 [INFO] ============================================================
+2026-08-10 12:17:57,421 [INFO]   Top failure causes:
+2026-08-10 12:17:57,421 [INFO]     376x  High attention entropy (model uncertain which joints are informative)
+2026-08-10 12:17:57,422 [INFO]     375x  Flat temporal attention (no dominant movement phase)
+2026-08-10 12:17:57,422 [INFO]     275x  Atypical healthy motion (possibly noisy skeleton or edge-case style)
+2026-08-10 12:17:57,422 [INFO]     157x  Low confidence (borderline prediction)
+2026-08-10 12:17:57,422 [INFO]     101x  Subtle compensatory pattern (compensation resembles healthy motion)
+2026-08-10 12:17:57,801 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\failure_causes.png
+2026-08-10 12:17:57,801 [INFO]   Part 4 complete.
+2026-08-10 12:17:57,802 [INFO] ============================================================
+2026-08-10 12:17:57,802 [INFO] PART 5 — ROM Validation
+2026-08-10 12:17:57,803 [INFO] ============================================================
+2026-08-10 12:18:48,504 [INFO]   elbow_left           mean=35.4 deg  ROM=[0.4, 170.0]
+2026-08-10 12:18:48,505 [INFO]   elbow_right          mean=34.7 deg  ROM=[0.5, 177.1]
+2026-08-10 12:18:48,506 [INFO]   hip_left             mean=8.7 deg  ROM=[0.2, 59.0]
+2026-08-10 12:18:48,508 [INFO]   hip_right            mean=9.2 deg  ROM=[0.3, 61.2]
+2026-08-10 12:18:48,508 [INFO]   knee_left            mean=8.4 deg  ROM=[0.3, 118.6]
+2026-08-10 12:18:48,509 [INFO]   knee_right           mean=8.9 deg  ROM=[0.3, 79.1]
+2026-08-10 12:18:48,511 [INFO]   shoulder_left        mean=23.4 deg  ROM=[0.3, 127.2]
+2026-08-10 12:18:48,512 [INFO]   shoulder_right       mean=22.2 deg  ROM=[0.3, 166.3]
+2026-08-10 12:18:48,515 [WARNING]   Detected 2286 anatomically impossible ROM values
+2026-08-10 12:18:51,831 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\rom_histograms.png
+2026-08-10 12:18:52,608 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\joint_boxplots.png
+2026-08-10 12:18:52,608 [INFO]   Part 5 complete.
+2026-08-10 12:18:52,610 [INFO] ============================================================
+2026-08-10 12:18:52,610 [INFO] PART 6 — Explainability Validation
+2026-08-10 12:18:52,610 [INFO] ============================================================
+2026-08-10 12:18:52,798 [INFO]   Top joint: SpineShoulder (mean=0.8054)
+2026-08-10 12:18:52,798 [INFO]   Mean joint entropy: 3.2045
+2026-08-10 12:18:52,798 [INFO]   Mean frame entropy: 4.1131
+2026-08-10 12:18:54,980 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\attention_heatmaps.png
+2026-08-10 12:18:55,523 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\temporal_attention.png
+2026-08-10 12:18:56,579 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\attention_entropy.png
+2026-08-10 12:18:56,579 [INFO]   Part 6 complete.
+2026-08-10 12:18:56,581 [INFO] ============================================================
+2026-08-10 12:18:56,581 [INFO] PART 7 — Calibration Analysis
+2026-08-10 12:18:56,581 [INFO] ============================================================
+2026-08-10 12:18:56,584 [INFO]   ECE: 0.0311
+2026-08-10 12:18:56,585 [INFO]   MCE: 0.1112
+2026-08-10 12:18:57,578 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\calibration_reliability.png
+2026-08-10 12:18:58,173 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\confidence_by_class.png
+2026-08-10 12:32:00,058 [INFO]   Part 7 complete.
+2026-08-10 12:32:00,059 [INFO] ============================================================
+2026-08-10 12:32:00,059 [INFO] PART 8 — Baseline Models
+2026-08-10 12:32:00,060 [INFO] ============================================================
+2026-08-10 12:32:01,179 [INFO]   Training baseline: Random Forest
+2026-08-10 12:33:51,976 [INFO]   Training baseline: Gradient Boosting
+2026-08-10 12:36:17,370 [INFO]   Training baseline: XGBoost
+2026-08-10 12:37:47,766 [INFO]   Training baseline: LSTM
+2026-08-10 13:28:24,390 [INFO] Device: cpu
+2026-08-10 13:28:24,390 [INFO] Loading dataset from: E:\INTERNSHIP COE\SkeletonData\SkeletonData\RawData
+2026-08-10 13:29:32,808 [INFO] Loaded 2589 samples in 68.4s
+2026-08-10 13:29:32,809 [INFO] Class distribution: {0: 2059, 1: 530}
+2026-08-10 13:29:33,039 [INFO] Loaded checkpoint: checkpoints/best_model.pt
+2026-08-10 13:29:33,040 [INFO] Running inference on 2589 samples...
+2026-08-10 13:30:17,567 [INFO] Inference complete: 44.5s (2589 samples)
+2026-08-10 13:30:17,567 [INFO] ============================================================
+2026-08-10 13:30:17,567 [INFO] PART 8 — Baseline Models
+2026-08-10 13:30:17,568 [INFO] ============================================================
+2026-08-10 13:30:18,368 [INFO]   Training baseline: Random Forest
+2026-08-10 13:32:03,402 [INFO]   Training baseline: Gradient Boosting
+2026-08-10 13:34:08,338 [INFO]   Training baseline: XGBoost
+2026-08-10 13:35:37,325 [INFO]   Training baseline: LSTM
+2026-08-10 13:38:56,199 [INFO] Device: cpu
+2026-08-10 13:38:56,200 [INFO] Loading dataset from: E:\INTERNSHIP COE\SkeletonData\SkeletonData\RawData
+2026-08-10 13:39:28,669 [INFO] Loaded 2589 samples in 32.5s
+2026-08-10 13:39:28,670 [INFO] Class distribution: {0: 2059, 1: 530}
+2026-08-10 13:39:28,781 [INFO] Loaded checkpoint: checkpoints/best_model.pt
+2026-08-10 13:39:28,781 [INFO] Running inference on 2589 samples...
+2026-08-10 13:40:08,746 [INFO] Inference complete: 40.0s (2589 samples)
+2026-08-10 13:40:08,746 [INFO] ============================================================
+2026-08-10 13:40:08,747 [INFO] PART 8 — Baseline Models
+2026-08-10 13:40:08,747 [INFO] ============================================================
+2026-08-10 13:40:09,342 [INFO]   Training baseline: Random Forest
+2026-08-10 13:41:48,613 [INFO]   Training baseline: Gradient Boosting
+2026-08-10 13:43:46,297 [INFO]   Training baseline: XGBoost
+2026-08-10 13:45:47,588 [INFO]   Training baseline: LSTM
+2026-08-10 15:07:24,040 [INFO] Device: cpu
+2026-08-10 15:07:24,041 [INFO] Loading dataset from: E:\INTERNSHIP COE\SkeletonData\SkeletonData\RawData
+2026-08-10 15:08:12,540 [INFO] Loaded 2589 samples in 48.5s
+2026-08-10 15:08:12,541 [INFO] Class distribution: {0: 2059, 1: 530}
+2026-08-10 15:08:12,699 [INFO] Loaded checkpoint: checkpoints/best_model.pt
+2026-08-10 15:08:12,700 [INFO] Running inference on 2589 samples...
+2026-08-10 15:08:43,193 [INFO] Inference complete: 30.5s (2589 samples)
+2026-08-10 15:08:43,193 [INFO] ============================================================
+2026-08-10 15:08:43,193 [INFO] PART 1 — Complete Model Evaluation
+2026-08-10 15:08:43,194 [INFO] ============================================================
+2026-08-10 15:08:43,294 [INFO]   Accuracy:          0.8548
+2026-08-10 15:08:43,296 [INFO]   Balanced Accuracy: 0.8379
+2026-08-10 15:08:43,296 [INFO]   F1 (macro):        0.8000
+2026-08-10 15:08:43,296 [INFO]   ROC-AUC:           0.9321
+2026-08-10 15:08:43,297 [INFO]   PR-AUC:            0.8008
+2026-08-10 15:08:43,297 [INFO]   MCC:               0.6129
+2026-08-10 15:08:43,298 [INFO]   Cohen Kappa:       0.6024
+2026-08-10 15:08:43,298 [INFO]   Sensitivity:       0.8094
+2026-08-10 15:08:43,298 [INFO]   Specificity:       0.8664
+2026-08-10 15:08:43,298 [INFO]   TP=429  TN=1784  FP=275  FN=101
+2026-08-10 15:08:44,680 [INFO]   Saved: E:\INTERNSHIP COE\results\confusion_matrix.png
+2026-08-10 15:08:45,721 [INFO]   Saved: E:\INTERNSHIP COE\results\roc_curve.png
+2026-08-10 15:08:46,479 [INFO]   Saved: E:\INTERNSHIP COE\results\pr_curve.png
+2026-08-10 15:08:47,525 [INFO]   Saved: E:\INTERNSHIP COE\results\figures\confidence_histogram.png
+2026-08-10 15:08:47,526 [INFO]   Part 1 complete.
+2026-08-10 15:08:47,528 [INFO] ============================================================
+2026-08-10 15:08:47,528 [INFO] PART 2 — Subject-Wise LOSO Analysis
+2026-08-10 15:08:47,528 [INFO] ============================================================
+2026-08-10 15:08:48,853 [INFO]   Best subjects:
+subject_id  accuracy  f1_macro  roc_auc
+       106       1.0       0.5      1.0
+       303       1.0       0.5      1.0
+       306       1.0       0.5      1.0
+2026-08-10 15:08:48,859 [INFO]   Worst subjects:
+subject_id  accuracy  f1_macro  roc_auc
+       210    0.2647    0.2589   0.8095
+       212    0.4808    0.3247   0.4516
+       202    0.5586    0.4670   0.6007
+2026-08-10 15:08:48,868 [INFO] 
+  LOSO Statistics (accuracy): mean=0.8220 std=0.1866
+2026-08-10 15:08:48,890 [WARNING]   Excel save failed: No module named 'openpyxl'
+2026-08-10 15:08:58,310 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\subject_barplots.png
+2026-08-10 15:09:06,422 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\subject_heatmap.png
+2026-08-10 15:09:06,423 [INFO]   Part 2 complete.
+2026-08-10 15:09:06,424 [INFO] ============================================================
+2026-08-10 15:09:06,425 [INFO] PART 3 — Failure Analysis
+2026-08-10 15:09:06,425 [INFO] ============================================================
+2026-08-10 15:09:06,426 [INFO]   Total failures: 376 / 2589
+2026-08-10 15:09:06,601 [INFO]   FP: 275  FN: 101
+2026-08-10 15:09:06,601 [INFO]   Part 3 complete.
+2026-08-10 15:09:06,602 [INFO] ============================================================
+2026-08-10 15:09:06,603 [INFO] PART 4 — Failure Reasoning Statistics
+2026-08-10 15:09:06,603 [INFO] ============================================================
+2026-08-10 15:09:06,689 [INFO]   Top failure causes:
+2026-08-10 15:09:06,690 [INFO]     376x  High attention entropy (model uncertain which joints are informative)
+2026-08-10 15:09:06,690 [INFO]     375x  Flat temporal attention (no dominant movement phase)
+2026-08-10 15:09:06,691 [INFO]     275x  Atypical healthy motion (possibly noisy skeleton or edge-case style)
+2026-08-10 15:09:06,691 [INFO]     157x  Low confidence (borderline prediction)
+2026-08-10 15:09:06,692 [INFO]     101x  Subtle compensatory pattern (compensation resembles healthy motion)
+2026-08-10 15:09:07,904 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\failure_causes.png
+2026-08-10 15:09:07,904 [INFO]   Part 4 complete.
+2026-08-10 15:09:07,906 [INFO] ============================================================
+2026-08-10 15:09:07,906 [INFO] PART 5 — ROM Validation
+2026-08-10 15:09:07,906 [INFO] ============================================================
+2026-08-10 15:09:55,975 [INFO]   elbow_left           mean=35.4 deg  ROM=[0.4, 170.0]
+2026-08-10 15:09:55,976 [INFO]   elbow_right          mean=34.7 deg  ROM=[0.5, 177.1]
+2026-08-10 15:09:55,977 [INFO]   hip_left             mean=8.7 deg  ROM=[0.2, 59.0]
+2026-08-10 15:09:55,978 [INFO]   hip_right            mean=9.2 deg  ROM=[0.3, 61.2]
+2026-08-10 15:09:55,978 [INFO]   knee_left            mean=8.4 deg  ROM=[0.3, 118.6]
+2026-08-10 15:09:55,979 [INFO]   knee_right           mean=8.9 deg  ROM=[0.3, 79.1]
+2026-08-10 15:09:55,980 [INFO]   shoulder_left        mean=23.4 deg  ROM=[0.3, 127.2]
+2026-08-10 15:09:55,980 [INFO]   shoulder_right       mean=22.2 deg  ROM=[0.3, 166.3]
+2026-08-10 15:09:55,983 [WARNING]   Detected 2286 anatomically impossible ROM values
+2026-08-10 15:09:57,939 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\rom_histograms.png
+2026-08-10 15:09:58,467 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\joint_boxplots.png
+2026-08-10 15:09:58,468 [INFO]   Part 5 complete.
+2026-08-10 15:09:58,470 [INFO] ============================================================
+2026-08-10 15:09:58,470 [INFO] PART 6 — Explainability Validation
+2026-08-10 15:09:58,470 [INFO] ============================================================
+2026-08-10 15:09:58,602 [INFO]   Top joint: SpineShoulder (mean=0.8054)
+2026-08-10 15:09:58,603 [INFO]   Mean joint entropy: 3.2045
+2026-08-10 15:09:58,603 [INFO]   Mean frame entropy: 4.1131
+2026-08-10 15:09:59,866 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\attention_heatmaps.png
+2026-08-10 15:10:00,217 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\temporal_attention.png
+2026-08-10 15:10:00,838 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\attention_entropy.png
+2026-08-10 15:10:00,838 [INFO]   Part 6 complete.
+2026-08-10 15:10:00,839 [INFO] ============================================================
+2026-08-10 15:10:00,840 [INFO] PART 7 — Calibration Analysis
+2026-08-10 15:10:00,840 [INFO] ============================================================
+2026-08-10 15:10:00,842 [INFO]   ECE: 0.0311
+2026-08-10 15:10:00,842 [INFO]   MCE: 0.1112
+2026-08-10 15:10:01,590 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\calibration_reliability.png
+2026-08-10 15:10:02,115 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\confidence_by_class.png
+2026-08-10 15:11:17,304 [INFO] Device: cpu
+2026-08-10 15:11:17,304 [INFO] Loading dataset from: E:\INTERNSHIP COE\SkeletonData\SkeletonData\RawData
+2026-08-10 15:11:44,548 [INFO] Loaded 2589 samples in 27.2s
+2026-08-10 15:11:44,549 [INFO] Class distribution: {0: 2059, 1: 530}
+2026-08-10 15:11:44,683 [INFO] Loaded checkpoint: checkpoints/best_model.pt
+2026-08-10 15:11:44,683 [INFO] Running inference on 2589 samples...
+2026-08-10 15:12:10,524 [INFO] Inference complete: 25.8s (2589 samples)
+2026-08-10 15:12:10,525 [INFO] ============================================================
+2026-08-10 15:12:10,525 [INFO] PART 1 — Complete Model Evaluation
+2026-08-10 15:12:10,526 [INFO] ============================================================
+2026-08-10 15:12:10,578 [INFO]   Accuracy:          0.8548
+2026-08-10 15:12:10,578 [INFO]   Balanced Accuracy: 0.8379
+2026-08-10 15:12:10,579 [INFO]   F1 (macro):        0.8000
+2026-08-10 15:12:10,579 [INFO]   ROC-AUC:           0.9321
+2026-08-10 15:12:10,579 [INFO]   PR-AUC:            0.8008
+2026-08-10 15:12:10,579 [INFO]   MCC:               0.6129
+2026-08-10 15:12:10,579 [INFO]   Cohen Kappa:       0.6024
+2026-08-10 15:12:10,579 [INFO]   Sensitivity:       0.8094
+2026-08-10 15:12:10,580 [INFO]   Specificity:       0.8664
+2026-08-10 15:12:10,580 [INFO]   TP=429  TN=1784  FP=275  FN=101
+2026-08-10 15:12:11,155 [INFO]   Saved: E:\INTERNSHIP COE\results\confusion_matrix.png
+2026-08-10 15:12:11,494 [INFO]   Saved: E:\INTERNSHIP COE\results\roc_curve.png
+2026-08-10 15:12:11,803 [INFO]   Saved: E:\INTERNSHIP COE\results\pr_curve.png
+2026-08-10 15:12:12,149 [INFO]   Saved: E:\INTERNSHIP COE\results\figures\confidence_histogram.png
+2026-08-10 15:12:12,150 [INFO]   Part 1 complete.
+2026-08-10 15:12:12,150 [INFO] ============================================================
+2026-08-10 15:12:12,150 [INFO] PART 2 — Subject-Wise LOSO Analysis
+2026-08-10 15:12:12,151 [INFO] ============================================================
+2026-08-10 15:12:12,529 [INFO]   Best subjects:
+subject_id  accuracy  f1_macro  roc_auc
+       106       1.0       0.5      1.0
+       303       1.0       0.5      1.0
+       306       1.0       0.5      1.0
+2026-08-10 15:12:12,530 [INFO]   Worst subjects:
+subject_id  accuracy  f1_macro  roc_auc
+       210    0.2647    0.2589   0.8095
+       212    0.4808    0.3247   0.4516
+       202    0.5586    0.4670   0.6007
+2026-08-10 15:12:12,532 [INFO] 
+  LOSO Statistics (accuracy): mean=0.8220 std=0.1866
+2026-08-10 15:12:12,538 [WARNING]   Excel save failed: No module named 'openpyxl'
+2026-08-10 15:12:14,436 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\subject_barplots.png
+2026-08-10 15:12:17,278 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\subject_heatmap.png
+2026-08-10 15:12:17,278 [INFO]   Part 2 complete.
+2026-08-10 15:12:17,279 [INFO] ============================================================
+2026-08-10 15:12:17,280 [INFO] PART 3 — Failure Analysis
+2026-08-10 15:12:17,281 [INFO] ============================================================
+2026-08-10 15:12:17,281 [INFO]   Total failures: 376 / 2589
+2026-08-10 15:12:17,322 [INFO]   FP: 275  FN: 101
+2026-08-10 15:12:17,322 [INFO]   Part 3 complete.
+2026-08-10 15:12:17,323 [INFO] ============================================================
+2026-08-10 15:12:17,323 [INFO] PART 4 — Failure Reasoning Statistics
+2026-08-10 15:12:17,323 [INFO] ============================================================
+2026-08-10 15:12:17,352 [INFO]   Top failure causes:
+2026-08-10 15:12:17,352 [INFO]     376x  High attention entropy (model uncertain which joints are informative)
+2026-08-10 15:12:17,352 [INFO]     375x  Flat temporal attention (no dominant movement phase)
+2026-08-10 15:12:17,353 [INFO]     275x  Atypical healthy motion (possibly noisy skeleton or edge-case style)
+2026-08-10 15:12:17,353 [INFO]     157x  Low confidence (borderline prediction)
+2026-08-10 15:12:17,353 [INFO]     101x  Subtle compensatory pattern (compensation resembles healthy motion)
+2026-08-10 15:12:17,636 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\failure_causes.png
+2026-08-10 15:12:17,637 [INFO]   Part 4 complete.
+2026-08-10 15:12:17,638 [INFO] ============================================================
+2026-08-10 15:12:17,638 [INFO] PART 5 — ROM Validation
+2026-08-10 15:12:17,638 [INFO] ============================================================
+2026-08-10 15:12:45,940 [INFO]   elbow_left           mean=35.4 deg  ROM=[0.4, 170.0]
+2026-08-10 15:12:45,942 [INFO]   elbow_right          mean=34.7 deg  ROM=[0.5, 177.1]
+2026-08-10 15:12:45,943 [INFO]   hip_left             mean=8.7 deg  ROM=[0.2, 59.0]
+2026-08-10 15:12:45,944 [INFO]   hip_right            mean=9.2 deg  ROM=[0.3, 61.2]
+2026-08-10 15:12:45,945 [INFO]   knee_left            mean=8.4 deg  ROM=[0.3, 118.6]
+2026-08-10 15:12:45,947 [INFO]   knee_right           mean=8.9 deg  ROM=[0.3, 79.1]
+2026-08-10 15:12:45,948 [INFO]   shoulder_left        mean=23.4 deg  ROM=[0.3, 127.2]
+2026-08-10 15:12:45,950 [INFO]   shoulder_right       mean=22.2 deg  ROM=[0.3, 166.3]
+2026-08-10 15:12:45,952 [WARNING]   Detected 2286 anatomically impossible ROM values
+2026-08-10 15:12:47,841 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\rom_histograms.png
+2026-08-10 15:12:48,346 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\joint_boxplots.png
+2026-08-10 15:12:48,346 [INFO]   Part 5 complete.
+2026-08-10 15:12:48,347 [INFO] ============================================================
+2026-08-10 15:12:48,347 [INFO] PART 6 — Explainability Validation
+2026-08-10 15:12:48,348 [INFO] ============================================================
+2026-08-10 15:12:48,485 [INFO]   Top joint: SpineShoulder (mean=0.8054)
+2026-08-10 15:12:48,485 [INFO]   Mean joint entropy: 3.2045
+2026-08-10 15:12:48,485 [INFO]   Mean frame entropy: 4.1131
+2026-08-10 15:12:49,908 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\attention_heatmaps.png
+2026-08-10 15:12:50,298 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\temporal_attention.png
+2026-08-10 15:12:50,929 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\attention_entropy.png
+2026-08-10 15:12:50,929 [INFO]   Part 6 complete.
+2026-08-10 15:12:50,931 [INFO] ============================================================
+2026-08-10 15:12:50,931 [INFO] PART 7 — Calibration Analysis
+2026-08-10 15:12:50,931 [INFO] ============================================================
+2026-08-10 15:12:50,932 [INFO]   ECE: 0.0311
+2026-08-10 15:12:50,933 [INFO]   MCE: 0.1112
+2026-08-10 15:12:51,523 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\calibration_reliability.png
+2026-08-10 15:12:51,928 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\confidence_by_class.png
+2026-08-10 15:17:33,799 [INFO]   Part 7 complete.
+2026-08-10 15:17:33,800 [INFO] ============================================================
+2026-08-10 15:17:33,800 [INFO] PART 8 — Baseline Models (Optimized Sequential)
+2026-08-10 15:17:33,800 [INFO] ============================================================
+2026-08-10 15:17:34,296 [INFO]   Training baseline: Random Forest (sequential)...
+2026-08-10 15:21:21,546 [INFO]   Training baseline: Gradient Boosting (sequential)...
+2026-08-10 15:27:20,696 [INFO]   Training baseline: XGBoost (sequential)...
+2026-08-10 15:28:26,118 [INFO]   Training baseline: LSTM (sequential)...
+2026-08-10 15:48:03,856 [INFO]   Training baseline: GRU (sequential)...
+2026-08-10 16:04:13,364 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\baseline_roc_curves.png
+2026-08-10 16:04:14,215 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\baseline_confusion_matrices.png
+2026-08-10 16:04:14,986 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\baseline_comparison.png
+2026-08-10 16:04:15,071 [INFO]   Saved LaTeX table: comparison_tables.tex
+2026-08-10 16:04:15,072 [INFO]   Part 8 complete.
+2026-08-10 16:04:15,080 [INFO] ============================================================
+2026-08-10 16:04:15,081 [INFO] PART 9 — Ablation Study
+2026-08-10 16:04:15,081 [INFO] ============================================================
+2026-08-10 16:04:15,082 [INFO]   Ablation: Full ST-GAT
+2026-08-10 16:04:49,216 [INFO]   Ablation: w/o Graph Attention
+2026-08-10 16:04:49,222 [WARNING]   Ablation w/o Graph Attention failed: name 'nn' is not defined
+2026-08-10 16:04:49,222 [INFO]   Ablation: w/o Temporal Attention
+2026-08-10 16:05:27,501 [INFO]   Part 9 complete.
+2026-08-10 16:05:27,502 [INFO] ============================================================
+2026-08-10 16:05:27,502 [INFO] PART 10 — Statistical Significance
+2026-08-10 16:05:27,502 [INFO] ============================================================
+2026-08-10 16:05:27,757 [INFO]   Accuracy: 0.8548
+2026-08-10 16:05:27,757 [INFO]   Bootstrap 95% CI: [0.8416, 0.8675]
+2026-08-10 16:05:31,736 [INFO]   Balanced Accuracy: 0.8381 [0.8203, 0.8566]
+2026-08-10 16:05:36,632 [INFO]   ROC-AUC: 0.9323 [0.9216, 0.9431]
+2026-08-10 16:05:44,074 [INFO]   MCC: 0.6131 [0.5772, 0.6469]
+2026-08-10 16:06:00,265 [INFO]   F1 (macro): 0.7999 [0.7810, 0.8180]
+2026-08-10 16:06:00,287 [INFO]   Saved: statistical_analysis.md
+2026-08-10 16:06:00,287 [INFO]   Part 10 complete.
+2026-08-10 16:06:00,287 [INFO] ============================================================
+2026-08-10 16:06:00,287 [INFO] PART 11 — Publication Figures
+2026-08-10 16:06:00,287 [INFO] ============================================================
+2026-08-10 16:06:00,373 [INFO] Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-08-10 16:06:00,374 [INFO] Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-08-10 16:06:00,384 [INFO] Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-08-10 16:06:00,385 [INFO] Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-08-10 16:06:00,393 [INFO] Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-08-10 16:06:00,393 [INFO] Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-08-10 16:06:00,913 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\exercise_performance.png
+2026-08-10 16:06:00,920 [INFO] Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-08-10 16:06:00,921 [INFO] Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-08-10 16:06:01,169 [INFO]   Saved figure: E:\INTERNSHIP COE\results\figures\error_rate_by_exercise.png
+2026-08-10 16:06:01,169 [INFO]   Part 11 complete.
+2026-08-10 16:06:01,170 [INFO] ============================================================
+2026-08-10 16:06:01,170 [INFO] PART 12 — Final Publication Report
+2026-08-10 16:06:01,170 [INFO] ============================================================
+2026-08-10 16:06:01,179 [INFO]   Saved: results/final_publication_report.md
+2026-08-10 16:06:01,179 [INFO]   Part 12 complete.
+2026-08-10 16:06:01,179 [INFO] 
+2026-08-10 16:06:01,179 [INFO] ============================================================
+2026-08-10 16:06:01,179 [INFO]   EVALUATION COMPLETE
+2026-08-10 16:06:01,179 [INFO]   Results saved in: E:\INTERNSHIP COE\results
+2026-08-10 16:06:01,180 [INFO] ============================================================
+2026-08-10 16:06:55,335 [INFO] Device: cpu
+2026-08-10 16:06:55,335 [INFO] Loading dataset from: E:\INTERNSHIP COE\SkeletonData\SkeletonData\RawData
+2026-08-10 16:07:15,631 [INFO] Loaded 2589 samples in 20.3s
+2026-08-10 16:07:15,632 [INFO] Class distribution: {0: 2059, 1: 530}
+2026-08-10 16:07:15,727 [INFO] Loaded checkpoint: checkpoints/best_model.pt
+2026-08-10 16:07:15,728 [INFO] Running inference on 2589 samples...
+2026-08-10 16:08:37,329 [INFO] Inference complete: 81.6s (2589 samples)
+2026-08-10 16:08:37,331 [INFO] ============================================================
+2026-08-10 16:08:37,332 [INFO] PART 9 — Ablation Study
+2026-08-10 16:08:37,333 [INFO] ============================================================
+2026-08-10 16:08:37,336 [INFO]   Ablation: Full ST-GAT
+2026-08-10 16:09:57,131 [INFO]   Ablation: w/o Graph Attention
+2026-08-10 16:09:57,142 [WARNING]   Ablation w/o Graph Attention failed: 'NoneType' object has no attribute 'weight'
+2026-08-10 16:09:57,142 [INFO]   Ablation: w/o Temporal Attention
+2026-08-10 16:11:23,737 [INFO]   Part 9 complete.
+2026-08-10 16:11:23,737 [INFO] ============================================================
+2026-08-10 16:11:23,737 [INFO] PART 10 — Statistical Significance
+2026-08-10 16:11:23,737 [INFO] ============================================================
+2026-08-10 16:11:23,916 [INFO]   Accuracy: 0.8548
+2026-08-10 16:11:23,916 [INFO]   Bootstrap 95% CI: [0.8409, 0.8683]
+2026-08-10 16:11:26,855 [INFO]   Balanced Accuracy: 0.8384 [0.8203, 0.8558]
+2026-08-10 16:11:30,929 [INFO]   ROC-AUC: 0.9318 [0.9198, 0.9423]
+2026-08-10 16:11:37,139 [INFO]   MCC: 0.6137 [0.5786, 0.6484]
+2026-08-10 16:11:52,186 [INFO]   F1 (macro): 0.7998 [0.7817, 0.8174]
+2026-08-10 16:11:52,188 [INFO]   Saved: statistical_analysis.md
+2026-08-10 16:11:52,188 [INFO]   Part 10 complete.
+2026-08-10 16:11:52,188 [INFO] ============================================================
+2026-08-10 16:11:52,188 [INFO] PART 12 — Final Publication Report
+2026-08-10 16:11:52,188 [INFO] ============================================================
+2026-08-10 16:12:42,652 [INFO] Device: cpu
+2026-08-10 16:12:42,652 [INFO] Loading dataset from: E:\INTERNSHIP COE\SkeletonData\SkeletonData\RawData
+2026-08-10 16:12:59,571 [INFO] Loaded 2589 samples in 16.9s
+2026-08-10 16:12:59,572 [INFO] Class distribution: {0: 2059, 1: 530}
+2026-08-10 16:12:59,629 [INFO] Loaded checkpoint: checkpoints/best_model.pt
+2026-08-10 16:12:59,630 [INFO] Running inference on 2589 samples...
+2026-08-10 16:13:55,702 [INFO] Inference complete: 56.1s (2589 samples)
+2026-08-10 16:13:55,704 [INFO] ============================================================
+2026-08-10 16:13:55,705 [INFO] PART 1 — Complete Model Evaluation
+2026-08-10 16:13:55,710 [INFO] ============================================================
+2026-08-10 16:13:55,848 [INFO]   Accuracy:          0.8548
+2026-08-10 16:13:55,848 [INFO]   Balanced Accuracy: 0.8379
+2026-08-10 16:13:55,849 [INFO]   F1 (macro):        0.8000
+2026-08-10 16:13:55,849 [INFO]   ROC-AUC:           0.9321
+2026-08-10 16:13:55,849 [INFO]   PR-AUC:            0.8008
+2026-08-10 16:13:55,849 [INFO]   MCC:               0.6129
+2026-08-10 16:13:55,849 [INFO]   Cohen Kappa:       0.6024
+2026-08-10 16:13:55,849 [INFO]   Sensitivity:       0.8094
+2026-08-10 16:13:55,849 [INFO]   Specificity:       0.8664
+2026-08-10 16:13:55,849 [INFO]   TP=429  TN=1784  FP=275  FN=101
+2026-08-10 16:13:56,522 [INFO]   Saved: E:\INTERNSHIP COE\results\confusion_matrix.png
+2026-08-10 16:13:57,046 [INFO]   Saved: E:\INTERNSHIP COE\results\roc_curve.png
+2026-08-10 16:13:57,471 [INFO]   Saved: E:\INTERNSHIP COE\results\pr_curve.png
+2026-08-10 16:13:57,806 [INFO]   Saved: E:\INTERNSHIP COE\results\figures\confidence_histogram.png
+2026-08-10 16:13:57,807 [INFO]   Part 1 complete.
+2026-08-10 16:13:57,807 [INFO] ============================================================
+2026-08-10 16:13:57,807 [INFO] PART 9 — Ablation Study
+2026-08-10 16:13:57,807 [INFO] ============================================================
+2026-08-10 16:13:57,807 [INFO]   Ablation: Full ST-GAT
+2026-08-10 16:15:22,180 [INFO]   Ablation: w/o Graph Attention
+2026-08-10 16:15:22,185 [WARNING]   Ablation w/o Graph Attention failed: 'NoneType' object has no attribute 'weight'
+2026-08-10 16:15:22,186 [INFO]   Ablation: w/o Temporal Attention
+2026-08-10 16:16:56,416 [INFO]   Part 9 complete.
+2026-08-10 16:16:56,421 [INFO] ============================================================
+2026-08-10 16:16:56,421 [INFO] PART 10 — Statistical Significance
+2026-08-10 16:16:56,421 [INFO] ============================================================
+2026-08-10 16:16:56,655 [INFO]   Accuracy: 0.8548
+2026-08-10 16:16:56,655 [INFO]   Bootstrap 95% CI: [0.8409, 0.8683]
+2026-08-10 16:16:59,558 [INFO]   Balanced Accuracy: 0.8384 [0.8203, 0.8558]
+2026-08-10 16:17:04,003 [INFO]   ROC-AUC: 0.9318 [0.9198, 0.9423]
+2026-08-10 16:17:10,073 [INFO]   MCC: 0.6137 [0.5786, 0.6484]
+2026-08-10 16:17:23,381 [INFO]   F1 (macro): 0.7998 [0.7817, 0.8174]
+2026-08-10 16:17:23,389 [INFO]   Saved: statistical_analysis.md
+2026-08-10 16:17:23,390 [INFO]   Part 10 complete.
+2026-08-10 16:17:23,392 [INFO] ============================================================
+2026-08-10 16:17:23,392 [INFO] PART 12 — Final Publication Report
+2026-08-10 16:17:23,392 [INFO] ============================================================
+2026-08-10 16:17:23,397 [INFO]   Saved: results/final_publication_report.md
+2026-08-10 16:17:23,397 [INFO]   Part 12 complete.
+2026-08-10 16:17:23,397 [INFO] 
+2026-08-10 16:17:23,397 [INFO] ============================================================
+2026-08-10 16:17:23,397 [INFO]   EVALUATION COMPLETE
+2026-08-10 16:17:23,397 [INFO]   Results saved in: E:\INTERNSHIP COE\results
+2026-08-10 16:17:23,397 [INFO] ============================================================
+2026-08-10 16:18:18,168 [INFO] Device: cpu
+2026-08-10 16:18:18,168 [INFO] Loading dataset from: E:\INTERNSHIP COE\SkeletonData\SkeletonData\RawData
+2026-08-10 16:18:38,991 [INFO] Loaded 2589 samples in 20.8s
+2026-08-10 16:18:38,992 [INFO] Class distribution: {0: 2059, 1: 530}
+2026-08-10 16:18:39,062 [INFO] Loaded checkpoint: checkpoints/best_model.pt
+2026-08-10 16:18:39,063 [INFO] Running inference on 2589 samples...
+2026-08-10 16:19:37,870 [INFO] Inference complete: 58.8s (2589 samples)
+2026-08-10 16:19:37,870 [INFO] ============================================================
+2026-08-10 16:19:37,870 [INFO] PART 1 — Complete Model Evaluation
+2026-08-10 16:19:37,871 [INFO] ============================================================
+2026-08-10 16:19:37,942 [INFO]   Accuracy:          0.8548
+2026-08-10 16:19:37,943 [INFO]   Balanced Accuracy: 0.8379
+2026-08-10 16:19:37,944 [INFO]   F1 (macro):        0.8000
+2026-08-10 16:19:37,945 [INFO]   ROC-AUC:           0.9321
+2026-08-10 16:19:37,945 [INFO]   PR-AUC:            0.8008
+2026-08-10 16:19:37,945 [INFO]   MCC:               0.6129
+2026-08-10 16:19:37,945 [INFO]   Cohen Kappa:       0.6024
+2026-08-10 16:19:37,945 [INFO]   Sensitivity:       0.8094
+2026-08-10 16:19:37,946 [INFO]   Specificity:       0.8664
+2026-08-10 16:19:37,946 [INFO]   TP=429  TN=1784  FP=275  FN=101
+2026-08-10 16:19:39,057 [INFO]   Saved: E:\INTERNSHIP COE\results\confusion_matrix.png
+2026-08-10 16:19:39,719 [INFO]   Saved: E:\INTERNSHIP COE\results\roc_curve.png
+2026-08-10 16:19:40,320 [INFO]   Saved: E:\INTERNSHIP COE\results\pr_curve.png
+2026-08-10 16:19:40,965 [INFO]   Saved: E:\INTERNSHIP COE\results\figures\confidence_histogram.png
+2026-08-10 16:19:40,965 [INFO]   Part 1 complete.
+2026-08-10 16:19:40,968 [INFO] ============================================================
+2026-08-10 16:19:40,968 [INFO] PART 9 — Ablation Study
+2026-08-10 16:19:40,969 [INFO] ============================================================
+2026-08-10 16:19:40,971 [INFO]   Ablation: Full ST-GAT
+2026-08-10 16:20:44,326 [INFO]   Ablation: w/o Graph Attention
+2026-08-10 16:22:15,236 [INFO]   Ablation: w/o Temporal Attention
+2026-08-10 16:23:42,698 [INFO]   Part 9 complete.
+2026-08-10 16:23:42,702 [INFO] ============================================================
+2026-08-10 16:23:42,702 [INFO] PART 10 — Statistical Significance
+2026-08-10 16:23:42,702 [INFO] ============================================================
+2026-08-10 16:23:42,991 [INFO]   Accuracy: 0.8548
+2026-08-10 16:23:42,991 [INFO]   Bootstrap 95% CI: [0.8409, 0.8683]
+2026-08-10 16:23:46,793 [INFO]   Balanced Accuracy: 0.8384 [0.8203, 0.8558]
+2026-08-10 16:23:51,421 [INFO]   ROC-AUC: 0.9318 [0.9198, 0.9423]
+2026-08-10 16:23:58,373 [INFO]   MCC: 0.6137 [0.5786, 0.6484]
+2026-08-10 16:24:12,805 [INFO]   F1 (macro): 0.7998 [0.7817, 0.8174]
+2026-08-10 16:24:12,810 [INFO]   Saved: statistical_analysis.md
+2026-08-10 16:24:12,810 [INFO]   Part 10 complete.
+2026-08-10 16:24:12,812 [INFO] ============================================================
+2026-08-10 16:24:12,812 [INFO] PART 12 — Final Publication Report
+2026-08-10 16:24:12,812 [INFO] ============================================================
+2026-08-10 16:24:12,819 [INFO]   Saved: results/final_publication_report.md
+2026-08-10 16:24:12,820 [INFO]   Part 12 complete.
+2026-08-10 16:24:12,820 [INFO] 
+2026-08-10 16:24:12,820 [INFO] ============================================================
+2026-08-10 16:24:12,820 [INFO]   EVALUATION COMPLETE
+2026-08-10 16:24:12,820 [INFO]   Results saved in: E:\INTERNSHIP COE\results
+2026-08-10 16:24:12,820 [INFO] ============================================================
+2026-08-10 16:24:46,682 [INFO] Device: cpu
+2026-08-10 16:24:46,683 [INFO] Loading dataset from: E:\INTERNSHIP COE\SkeletonData\SkeletonData\RawData
+2026-08-10 16:25:05,956 [INFO] Loaded 2589 samples in 19.3s
+2026-08-10 16:25:05,958 [INFO] Class distribution: {0: 2059, 1: 530}
+2026-08-10 16:25:06,035 [INFO] Loaded checkpoint: checkpoints/best_model.pt
+2026-08-10 16:25:06,036 [INFO] Running inference on 2589 samples...
+2026-08-10 16:26:13,768 [INFO] Inference complete: 67.7s (2589 samples)
+2026-08-10 16:26:13,769 [INFO] ============================================================
+2026-08-10 16:26:13,769 [INFO] PART 1 — Complete Model Evaluation
+2026-08-10 16:26:13,769 [INFO] ============================================================
+2026-08-10 16:26:13,805 [INFO]   Accuracy:          0.8548
+2026-08-10 16:26:13,805 [INFO]   Balanced Accuracy: 0.8379
+2026-08-10 16:26:13,805 [INFO]   F1 (macro):        0.8000
+2026-08-10 16:26:13,806 [INFO]   ROC-AUC:           0.9321
+2026-08-10 16:26:13,806 [INFO]   PR-AUC:            0.8008
+2026-08-10 16:26:13,806 [INFO]   MCC:               0.6129
+2026-08-10 16:26:13,806 [INFO]   Cohen Kappa:       0.6024
+2026-08-10 16:26:13,806 [INFO]   Sensitivity:       0.8094
+2026-08-10 16:26:13,806 [INFO]   Specificity:       0.8664
+2026-08-10 16:26:13,806 [INFO]   TP=429  TN=1784  FP=275  FN=101
+2026-08-10 16:26:14,450 [INFO]   Saved: E:\INTERNSHIP COE\results\confusion_matrix.png
+2026-08-10 16:26:14,865 [INFO]   Saved: E:\INTERNSHIP COE\results\roc_curve.png
+2026-08-10 16:26:15,203 [INFO]   Saved: E:\INTERNSHIP COE\results\pr_curve.png
+2026-08-10 16:26:15,504 [INFO]   Saved: E:\INTERNSHIP COE\results\figures\confidence_histogram.png
+2026-08-10 16:26:15,505 [INFO]   Part 1 complete.
+2026-08-10 16:26:15,505 [INFO] ============================================================
+2026-08-10 16:26:15,505 [INFO] PART 9 — Ablation Study
+2026-08-10 16:26:15,505 [INFO] ============================================================
+2026-08-10 16:26:15,505 [INFO]   Ablation: Full ST-GAT
+2026-08-10 16:27:25,771 [INFO]   Ablation: w/o Graph Attention
+2026-08-10 16:28:48,956 [INFO]   Ablation: w/o Temporal Attention
+2026-08-10 16:28:48,986 [WARNING]   Ablation w/o Temporal Attention failed: name 'build_batched_edge_index' is not defined
+2026-08-10 16:28:49,001 [INFO]   Part 9 complete.
+2026-08-10 16:28:49,016 [INFO] ============================================================
+2026-08-10 16:28:49,016 [INFO] PART 10 — Statistical Significance
+2026-08-10 16:28:49,018 [INFO] ============================================================
+2026-08-10 16:28:49,288 [INFO]   Accuracy: 0.8548
+2026-08-10 16:28:49,288 [INFO]   Bootstrap 95% CI: [0.8409, 0.8683]
+2026-08-10 16:28:53,055 [INFO]   Balanced Accuracy: 0.8384 [0.8203, 0.8558]
+2026-08-10 16:28:57,396 [INFO]   ROC-AUC: 0.9318 [0.9198, 0.9423]
+2026-08-10 16:29:04,631 [INFO]   MCC: 0.6137 [0.5786, 0.6484]
+2026-08-10 16:29:34,299 [INFO] Device: cpu
+2026-08-10 16:29:34,299 [INFO] Loading dataset from: E:\INTERNSHIP COE\SkeletonData\SkeletonData\RawData
+2026-08-10 16:29:56,681 [INFO] Loaded 2589 samples in 22.4s
+2026-08-10 16:29:56,682 [INFO] Class distribution: {0: 2059, 1: 530}
+2026-08-10 16:29:56,756 [INFO] Loaded checkpoint: checkpoints/best_model.pt
+2026-08-10 16:29:56,756 [INFO] Running inference on 2589 samples...
+2026-08-10 16:30:55,108 [INFO] Inference complete: 58.4s (2589 samples)
+2026-08-10 16:30:55,109 [INFO] ============================================================
+2026-08-10 16:30:55,109 [INFO] PART 1 — Complete Model Evaluation
+2026-08-10 16:30:55,109 [INFO] ============================================================
+2026-08-10 16:30:55,272 [INFO]   Accuracy:          0.8548
+2026-08-10 16:30:55,273 [INFO]   Balanced Accuracy: 0.8379
+2026-08-10 16:30:55,274 [INFO]   F1 (macro):        0.8000
+2026-08-10 16:30:55,274 [INFO]   ROC-AUC:           0.9321
+2026-08-10 16:30:55,275 [INFO]   PR-AUC:            0.8008
+2026-08-10 16:30:55,275 [INFO]   MCC:               0.6129
+2026-08-10 16:30:55,276 [INFO]   Cohen Kappa:       0.6024
+2026-08-10 16:30:55,276 [INFO]   Sensitivity:       0.8094
+2026-08-10 16:30:55,276 [INFO]   Specificity:       0.8664
+2026-08-10 16:30:55,277 [INFO]   TP=429  TN=1784  FP=275  FN=101
+2026-08-10 16:30:55,749 [INFO]   Saved: E:\INTERNSHIP COE\results\confusion_matrix.png
+2026-08-10 16:30:56,080 [INFO]   Saved: E:\INTERNSHIP COE\results\roc_curve.png
+2026-08-10 16:30:56,298 [INFO]   Saved: E:\INTERNSHIP COE\results\pr_curve.png
+2026-08-10 16:30:56,531 [INFO]   Saved: E:\INTERNSHIP COE\results\figures\confidence_histogram.png
+2026-08-10 16:30:56,531 [INFO]   Part 1 complete.
+2026-08-10 16:30:56,531 [INFO] ============================================================
+2026-08-10 16:30:56,533 [INFO] PART 9 — Ablation Study
+2026-08-10 16:30:56,533 [INFO] ============================================================
+2026-08-10 16:30:56,533 [INFO]   Ablation: Full ST-GAT
+2026-08-10 16:32:14,912 [INFO]   Ablation: w/o Graph Attention
+2026-08-10 16:33:31,284 [INFO]   Ablation: w/o Temporal Attention
+2026-08-10 16:33:31,864 [WARNING]   Ablation w/o Temporal Attention failed: name 'F' is not defined
+2026-08-10 16:33:31,899 [INFO]   Part 9 complete.
+2026-08-10 16:33:31,921 [INFO] ============================================================
+2026-08-10 16:33:31,921 [INFO] PART 10 — Statistical Significance
+2026-08-10 16:33:31,924 [INFO] ============================================================
+2026-08-10 16:33:32,366 [INFO]   Accuracy: 0.8548
+2026-08-10 16:33:32,367 [INFO]   Bootstrap 95% CI: [0.8409, 0.8683]
+2026-08-10 16:33:36,845 [INFO]   Balanced Accuracy: 0.8384 [0.8203, 0.8558]
+2026-08-10 16:33:42,436 [INFO]   ROC-AUC: 0.9318 [0.9198, 0.9423]
+2026-08-10 16:33:50,141 [INFO]   MCC: 0.6137 [0.5786, 0.6484]
+2026-08-10 16:34:05,540 [INFO]   F1 (macro): 0.7998 [0.7817, 0.8174]
+2026-08-10 16:34:05,550 [INFO]   Saved: statistical_analysis.md
+2026-08-10 16:34:05,550 [INFO]   Part 10 complete.
+2026-08-10 16:34:05,552 [INFO] ============================================================
+2026-08-10 16:34:05,552 [INFO] PART 12 — Final Publication Report
+2026-08-10 16:34:05,552 [INFO] ============================================================
+2026-08-10 16:34:05,557 [INFO]   Saved: results/final_publication_report.md
+2026-08-10 16:34:05,558 [INFO]   Part 12 complete.
+2026-08-10 16:34:05,559 [INFO] 
+2026-08-10 16:34:05,559 [INFO] ============================================================
+2026-08-10 16:34:05,559 [INFO]   EVALUATION COMPLETE
+2026-08-10 16:34:05,560 [INFO]   Results saved in: E:\INTERNSHIP COE\results
+2026-08-10 16:34:05,560 [INFO] ============================================================
+2026-08-10 16:34:39,822 [INFO] Device: cpu
+2026-08-10 16:34:39,824 [INFO] Loading dataset from: E:\INTERNSHIP COE\SkeletonData\SkeletonData\RawData
+2026-08-10 16:34:59,578 [INFO] Loaded 2589 samples in 19.8s
+2026-08-10 16:34:59,578 [INFO] Class distribution: {0: 2059, 1: 530}
+2026-08-10 16:34:59,698 [INFO] Loaded checkpoint: checkpoints/best_model.pt
+2026-08-10 16:34:59,699 [INFO] Running inference on 2589 samples...
+2026-08-10 16:36:16,521 [INFO] Inference complete: 76.8s (2589 samples)
+2026-08-10 16:36:16,522 [INFO] ============================================================
+2026-08-10 16:36:16,522 [INFO] PART 1 — Complete Model Evaluation
+2026-08-10 16:36:16,522 [INFO] ============================================================
+2026-08-10 16:36:16,651 [INFO]   Accuracy:          0.8548
+2026-08-10 16:36:16,653 [INFO]   Balanced Accuracy: 0.8379
+2026-08-10 16:36:16,653 [INFO]   F1 (macro):        0.8000
+2026-08-10 16:36:16,654 [INFO]   ROC-AUC:           0.9321
+2026-08-10 16:36:16,654 [INFO]   PR-AUC:            0.8008
+2026-08-10 16:36:16,655 [INFO]   MCC:               0.6129
+2026-08-10 16:36:16,655 [INFO]   Cohen Kappa:       0.6024
+2026-08-10 16:36:16,655 [INFO]   Sensitivity:       0.8094
+2026-08-10 16:36:16,655 [INFO]   Specificity:       0.8664
+2026-08-10 16:36:16,656 [INFO]   TP=429  TN=1784  FP=275  FN=101
+2026-08-10 16:36:17,090 [INFO]   Saved: E:\INTERNSHIP COE\results\confusion_matrix.png
+2026-08-10 16:36:17,380 [INFO]   Saved: E:\INTERNSHIP COE\results\roc_curve.png
+2026-08-10 16:36:17,623 [INFO]   Saved: E:\INTERNSHIP COE\results\pr_curve.png
+2026-08-10 16:36:17,903 [INFO]   Saved: E:\INTERNSHIP COE\results\figures\confidence_histogram.png
+2026-08-10 16:36:17,903 [INFO]   Part 1 complete.
+2026-08-10 16:36:17,904 [INFO] ============================================================
+2026-08-10 16:36:17,904 [INFO] PART 9 — Ablation Study
+2026-08-10 16:36:17,904 [INFO] ============================================================
+2026-08-10 16:36:17,904 [INFO]   Ablation: Full ST-GAT
+2026-08-10 16:37:11,040 [INFO]   Ablation: w/o Graph Attention
+2026-08-10 16:38:25,852 [INFO]   Ablation: w/o Temporal Attention
+2026-08-10 16:39:07,259 [INFO]   Part 9 complete.
+2026-08-10 16:39:07,264 [INFO] ============================================================
+2026-08-10 16:39:07,264 [INFO] PART 10 — Statistical Significance
+2026-08-10 16:39:07,264 [INFO] ============================================================
+2026-08-10 16:39:07,476 [INFO]   Accuracy: 0.8548
+2026-08-10 16:39:07,477 [INFO]   Bootstrap 95% CI: [0.8409, 0.8683]
+2026-08-10 16:39:10,650 [INFO]   Balanced Accuracy: 0.8384 [0.8203, 0.8558]
+2026-08-10 16:39:14,449 [INFO]   ROC-AUC: 0.9318 [0.9198, 0.9423]
+2026-08-10 16:39:20,736 [INFO]   MCC: 0.6137 [0.5786, 0.6484]
+2026-08-10 16:39:36,552 [INFO]   F1 (macro): 0.7998 [0.7817, 0.8174]
+2026-08-10 16:39:36,559 [INFO]   Saved: statistical_analysis.md
+2026-08-10 16:39:36,559 [INFO]   Part 10 complete.
+2026-08-10 16:39:36,560 [INFO] ============================================================
+2026-08-10 16:39:36,560 [INFO] PART 12 — Final Publication Report
+2026-08-10 16:39:36,560 [INFO] ============================================================
+2026-08-10 16:39:36,564 [INFO]   Saved: results/final_publication_report.md
+2026-08-10 16:39:36,564 [INFO]   Part 12 complete.
+2026-08-10 16:39:36,564 [INFO] 
+2026-08-10 16:39:36,564 [INFO] ============================================================
+2026-08-10 16:39:36,564 [INFO]   EVALUATION COMPLETE
+2026-08-10 16:39:36,564 [INFO]   Results saved in: E:\INTERNSHIP COE\results
+2026-08-10 16:39:36,564 [INFO] ============================================================

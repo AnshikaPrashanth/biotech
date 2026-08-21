@@ -1,7 +1,7 @@
 subject_id,fitted,n_healthy,n_compensated,mean_confidence,std_confidence
-101,True,105,3,0.3999,0.2835
-102,True,109,2,0.3213,0.3213
-103,True,108,2,0.2859,0.2859
+101,True,105,2,0.5998,0.0255
+102,True,109,1,0.6425,0.0
+103,True,108,1,0.5718,0.0
 104,True,57,0,,
 105,True,113,2,0.6799,0.0335
 106,True,107,0,,

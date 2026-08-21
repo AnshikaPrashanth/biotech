@@ -1,12 +1,12 @@
 # Failure Analysis
 
-Generated: 2026-08-09T01:49:49.777192+00:00
+Generated: 2026-08-10T09:42:17.282207+00:00
 
-**Total failures: 380 / 2592**
+**Total failures: 376 / 2589**
 
 ---
 
-## False Positives (278 samples)
+## False Positives (275 samples)
 
 ### `101_18_0_6_1_chair.txt`
 - **Subject:** 101 | **Exercise:** 4 | **Position:** chair
@@ -2960,99 +2960,66 @@ Generated: 2026-08-09T01:49:49.777192+00:00
 - **Subject:** 305 | **Exercise:** 3 | **Position:** chair
 - **Ground Truth:** Healthy
 - **Prediction:** Compensated
-- **Confidence:** `0.8054`
-- **Prob (Healthy/Comp):** `[0.1946, 0.8054]`
-- **Top-3 Attention Joints:** SpineShoulder(0.806), SpineBase(0.778), WristRight(0.756)
-- **Peak Frame:** 14 (value 0.0229)
-- **Attention Entropy:** 3.2041
+- **Confidence:** `0.6866`
+- **Prob (Healthy/Comp):** `[0.3134, 0.6866]`
+- **Top-3 Attention Joints:** SpineShoulder(0.807), SpineBase(0.782), WristRight(0.757)
+- **Peak Frame:** 14 (value 0.0234)
+- **Attention Entropy:** 3.2033
 - **Inferred Reason:** High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Atypical healthy motion (possibly noisy skeleton or edge-case style)
 
 ### `305_18_0_2_1_chair.txt`
 - **Subject:** 305 | **Exercise:** 3 | **Position:** chair
 - **Ground Truth:** Healthy
 - **Prediction:** Compensated
-- **Confidence:** `0.8421`
-- **Prob (Healthy/Comp):** `[0.1579, 0.8421]`
-- **Top-3 Attention Joints:** SpineShoulder(0.806), SpineBase(0.776), WristRight(0.756)
-- **Peak Frame:** 16 (value 0.0297)
-- **Attention Entropy:** 3.2045
+- **Confidence:** `0.7793`
+- **Prob (Healthy/Comp):** `[0.2207, 0.7793]`
+- **Top-3 Attention Joints:** SpineShoulder(0.806), SpineBase(0.780), WristRight(0.757)
+- **Peak Frame:** 16 (value 0.0303)
+- **Attention Entropy:** 3.2038
 - **Inferred Reason:** High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Atypical healthy motion (possibly noisy skeleton or edge-case style)
 
 ### `305_18_0_3_1_chair.txt`
 - **Subject:** 305 | **Exercise:** 3 | **Position:** chair
 - **Ground Truth:** Healthy
 - **Prediction:** Compensated
-- **Confidence:** `0.7134`
-- **Prob (Healthy/Comp):** `[0.2866, 0.7134]`
-- **Top-3 Attention Joints:** SpineShoulder(0.807), SpineBase(0.783), WristRight(0.758)
-- **Peak Frame:** 24 (value 0.0245)
-- **Attention Entropy:** 3.2032
-- **Inferred Reason:** High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Atypical healthy motion (possibly noisy skeleton or edge-case style)
+- **Confidence:** `0.6300`
+- **Prob (Healthy/Comp):** `[0.3700, 0.6300]`
+- **Top-3 Attention Joints:** SpineShoulder(0.808), SpineBase(0.788), WristRight(0.759)
+- **Peak Frame:** 24 (value 0.0252)
+- **Attention Entropy:** 3.2023
+- **Inferred Reason:** Low confidence (borderline prediction); High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Atypical healthy motion (possibly noisy skeleton or edge-case style)
 
 ### `305_18_0_4_1_chair.txt`
 - **Subject:** 305 | **Exercise:** 3 | **Position:** chair
 - **Ground Truth:** Healthy
 - **Prediction:** Compensated
-- **Confidence:** `0.6901`
-- **Prob (Healthy/Comp):** `[0.3099, 0.6901]`
-- **Top-3 Attention Joints:** SpineShoulder(0.807), SpineBase(0.782), WristRight(0.756)
-- **Peak Frame:** 21 (value 0.0266)
-- **Attention Entropy:** 3.2034
-- **Inferred Reason:** High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Atypical healthy motion (possibly noisy skeleton or edge-case style)
+- **Confidence:** `0.5984`
+- **Prob (Healthy/Comp):** `[0.4016, 0.5984]`
+- **Top-3 Attention Joints:** SpineShoulder(0.808), SpineBase(0.787), WristRight(0.757)
+- **Peak Frame:** 21 (value 0.0275)
+- **Attention Entropy:** 3.2025
+- **Inferred Reason:** Low confidence (borderline prediction); High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Atypical healthy motion (possibly noisy skeleton or edge-case style)
 
 ### `305_18_0_5_1_chair.txt`
 - **Subject:** 305 | **Exercise:** 3 | **Position:** chair
 - **Ground Truth:** Healthy
 - **Prediction:** Compensated
-- **Confidence:** `0.8083`
-- **Prob (Healthy/Comp):** `[0.1917, 0.8083]`
-- **Top-3 Attention Joints:** SpineShoulder(0.806), SpineBase(0.777), WristRight(0.755)
-- **Peak Frame:** 18 (value 0.0283)
-- **Attention Entropy:** 3.2043
+- **Confidence:** `0.7070`
+- **Prob (Healthy/Comp):** `[0.2930, 0.7070]`
+- **Top-3 Attention Joints:** SpineShoulder(0.806), SpineBase(0.781), WristRight(0.756)
+- **Peak Frame:** 18 (value 0.0289)
+- **Attention Entropy:** 3.2036
 - **Inferred Reason:** High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Atypical healthy motion (possibly noisy skeleton or edge-case style)
 
 ### `305_18_0_6_1_chair.txt`
 - **Subject:** 305 | **Exercise:** 3 | **Position:** chair
 - **Ground Truth:** Healthy
 - **Prediction:** Compensated
-- **Confidence:** `0.7278`
-- **Prob (Healthy/Comp):** `[0.2722, 0.7278]`
-- **Top-3 Attention Joints:** SpineShoulder(0.806), SpineBase(0.780), WristRight(0.755)
-- **Peak Frame:** 20 (value 0.0262)
-- **Attention Entropy:** 3.2037
-- **Inferred Reason:** High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Atypical healthy motion (possibly noisy skeleton or edge-case style)
-
-### `305_18_1_1_1_chair.txt`
-- **Subject:** 305 | **Exercise:** 3 | **Position:** chair
-- **Ground Truth:** Healthy
-- **Prediction:** Compensated
-- **Confidence:** `0.5538`
-- **Prob (Healthy/Comp):** `[0.4462, 0.5538]`
-- **Top-3 Attention Joints:** SpineShoulder(0.806), SpineBase(0.778), WristRight(0.756)
-- **Peak Frame:** 36 (value 0.0252)
-- **Attention Entropy:** 3.2041
-- **Inferred Reason:** Low confidence (borderline prediction); Near-equal class probabilities (ambiguous motion); High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Atypical healthy motion (possibly noisy skeleton or edge-case style)
-
-### `305_18_1_4_1_chair.txt`
-- **Subject:** 305 | **Exercise:** 3 | **Position:** chair
-- **Ground Truth:** Healthy
-- **Prediction:** Compensated
-- **Confidence:** `0.5079`
-- **Prob (Healthy/Comp):** `[0.4921, 0.5079]`
-- **Top-3 Attention Joints:** SpineShoulder(0.807), SpineBase(0.781), WristRight(0.758)
-- **Peak Frame:** 41 (value 0.0286)
-- **Attention Entropy:** 3.2036
-- **Inferred Reason:** Low confidence (borderline prediction); Near-equal class probabilities (ambiguous motion); High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Atypical healthy motion (possibly noisy skeleton or edge-case style)
-
-### `305_18_1_6_1_chair.txt`
-- **Subject:** 305 | **Exercise:** 3 | **Position:** chair
-- **Ground Truth:** Healthy
-- **Prediction:** Compensated
-- **Confidence:** `0.5774`
-- **Prob (Healthy/Comp):** `[0.4226, 0.5774]`
-- **Top-3 Attention Joints:** SpineShoulder(0.806), SpineBase(0.780), WristRight(0.756)
-- **Peak Frame:** 2 (value 0.0269)
-- **Attention Entropy:** 3.2041
+- **Confidence:** `0.6017`
+- **Prob (Healthy/Comp):** `[0.3983, 0.6017]`
+- **Top-3 Attention Joints:** SpineShoulder(0.807), SpineBase(0.784), WristRight(0.756)
+- **Peak Frame:** 20 (value 0.0269)
+- **Attention Entropy:** 3.2029
 - **Inferred Reason:** Low confidence (borderline prediction); High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Atypical healthy motion (possibly noisy skeleton or edge-case style)
 
 ### `307_18_1_3_1_sit.txt`
@@ -3067,7 +3034,7 @@ Generated: 2026-08-09T01:49:49.777192+00:00
 - **Inferred Reason:** Low confidence (borderline prediction); Near-equal class probabilities (ambiguous motion); High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Atypical healthy motion (possibly noisy skeleton or edge-case style)
 
 
-## False Negatives (102 samples)
+## False Negatives (101 samples)
 
 ### `105_18_0_12_2_stand.txt`
 - **Subject:** 105 | **Exercise:** 0 | **Position:** stand
@@ -3502,8 +3469,8 @@ Generated: 2026-08-09T01:49:49.777192+00:00
 - **Subject:** 206 | **Exercise:** 3 | **Position:** chair
 - **Ground Truth:** Compensated
 - **Prediction:** Healthy
-- **Confidence:** `0.8802`
-- **Prob (Healthy/Comp):** `[0.8802, 0.1197]`
+- **Confidence:** `0.8803`
+- **Prob (Healthy/Comp):** `[0.8803, 0.1197]`
 - **Top-3 Attention Joints:** SpineShoulder(0.805), SpineBase(0.781), WristLeft(0.757)
 - **Peak Frame:** 24 (value 0.0244)
 - **Attention Entropy:** 3.2023
@@ -4096,67 +4063,56 @@ Generated: 2026-08-09T01:49:49.777192+00:00
 - **Subject:** 215 | **Exercise:** 5 | **Position:** stand
 - **Ground Truth:** Compensated
 - **Prediction:** Healthy
-- **Confidence:** `0.5982`
-- **Prob (Healthy/Comp):** `[0.5982, 0.4018]`
-- **Top-3 Attention Joints:** SpineShoulder(0.803), SpineBase(0.768), WristLeft(0.753)
-- **Peak Frame:** 37 (value 0.0364)
-- **Attention Entropy:** 3.2064
-- **Inferred Reason:** Low confidence (borderline prediction); High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Subtle compensatory pattern (compensation resembles healthy motion)
+- **Confidence:** `0.5232`
+- **Prob (Healthy/Comp):** `[0.5232, 0.4768]`
+- **Top-3 Attention Joints:** SpineShoulder(0.803), SpineBase(0.767), WristLeft(0.753)
+- **Peak Frame:** 37 (value 0.0359)
+- **Attention Entropy:** 3.2065
+- **Inferred Reason:** Low confidence (borderline prediction); Near-equal class probabilities (ambiguous motion); High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Subtle compensatory pattern (compensation resembles healthy motion)
 
 ### `215_18_3_6_2_stand.txt`
 - **Subject:** 215 | **Exercise:** 5 | **Position:** stand
 - **Ground Truth:** Compensated
 - **Prediction:** Healthy
-- **Confidence:** `0.9627`
-- **Prob (Healthy/Comp):** `[0.9627, 0.0373]`
-- **Top-3 Attention Joints:** SpineShoulder(0.803), SpineBase(0.778), WristRight(0.755)
-- **Peak Frame:** 52 (value 0.0429)
-- **Attention Entropy:** 3.2054
+- **Confidence:** `0.9769`
+- **Prob (Healthy/Comp):** `[0.9769, 0.0231]`
+- **Top-3 Attention Joints:** SpineShoulder(0.803), SpineBase(0.776), WristRight(0.755)
+- **Peak Frame:** 58 (value 0.0430)
+- **Attention Entropy:** 3.2056
 - **Inferred Reason:** High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Subtle compensatory pattern (compensation resembles healthy motion)
 
 ### `215_18_3_7_2_stand.txt`
 - **Subject:** 215 | **Exercise:** 5 | **Position:** stand
 - **Ground Truth:** Compensated
 - **Prediction:** Healthy
-- **Confidence:** `0.8956`
-- **Prob (Healthy/Comp):** `[0.8956, 0.1044]`
-- **Top-3 Attention Joints:** SpineShoulder(0.802), SpineBase(0.768), WristRight(0.755)
-- **Peak Frame:** 31 (value 0.0307)
-- **Attention Entropy:** 3.2065
+- **Confidence:** `0.8593`
+- **Prob (Healthy/Comp):** `[0.8593, 0.1407]`
+- **Top-3 Attention Joints:** SpineShoulder(0.802), SpineBase(0.767), WristRight(0.754)
+- **Peak Frame:** 31 (value 0.0300)
+- **Attention Entropy:** 3.2066
 - **Inferred Reason:** High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Subtle compensatory pattern (compensation resembles healthy motion)
-
-### `215_18_4_1_2_stand.txt`
-- **Subject:** 215 | **Exercise:** 5 | **Position:** stand
-- **Ground Truth:** Compensated
-- **Prediction:** Healthy
-- **Confidence:** `0.5463`
-- **Prob (Healthy/Comp):** `[0.5463, 0.4537]`
-- **Top-3 Attention Joints:** SpineShoulder(0.802), SpineBase(0.764), WristRight(0.753)
-- **Peak Frame:** 14 (value 0.0277)
-- **Attention Entropy:** 3.2067
-- **Inferred Reason:** Low confidence (borderline prediction); Near-equal class probabilities (ambiguous motion); High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Subtle compensatory pattern (compensation resembles healthy motion)
 
 ### `215_18_4_3_2_stand.txt`
 - **Subject:** 215 | **Exercise:** 5 | **Position:** stand
 - **Ground Truth:** Compensated
 - **Prediction:** Healthy
-- **Confidence:** `0.5611`
-- **Prob (Healthy/Comp):** `[0.5611, 0.4389]`
-- **Top-3 Attention Joints:** SpineShoulder(0.802), SpineBase(0.765), WristRight(0.753)
-- **Peak Frame:** 14 (value 0.0284)
-- **Attention Entropy:** 3.2066
+- **Confidence:** `0.5062`
+- **Prob (Healthy/Comp):** `[0.5062, 0.4938]`
+- **Top-3 Attention Joints:** SpineShoulder(0.802), SpineBase(0.764), WristRight(0.753)
+- **Peak Frame:** 14 (value 0.0282)
+- **Attention Entropy:** 3.2067
 - **Inferred Reason:** Low confidence (borderline prediction); Near-equal class probabilities (ambiguous motion); High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Subtle compensatory pattern (compensation resembles healthy motion)
 
 ### `215_18_4_4_2_stand.txt`
 - **Subject:** 215 | **Exercise:** 5 | **Position:** stand
 - **Ground Truth:** Compensated
 - **Prediction:** Healthy
-- **Confidence:** `0.6534`
-- **Prob (Healthy/Comp):** `[0.6534, 0.3466]`
-- **Top-3 Attention Joints:** SpineShoulder(0.802), SpineBase(0.764), WristRight(0.753)
-- **Peak Frame:** 14 (value 0.0262)
+- **Confidence:** `0.5957`
+- **Prob (Healthy/Comp):** `[0.5957, 0.4043]`
+- **Top-3 Attention Joints:** SpineShoulder(0.801), SpineBase(0.763), WristRight(0.753)
+- **Peak Frame:** 14 (value 0.0259)
 - **Attention Entropy:** 3.2068
-- **Inferred Reason:** High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Subtle compensatory pattern (compensation resembles healthy motion)
+- **Inferred Reason:** Low confidence (borderline prediction); High attention entropy (model uncertain which joints are informative); Flat temporal attention (no dominant movement phase); Subtle compensatory pattern (compensation resembles healthy motion)
 
 ### `215_18_6_9_2_stand.txt`
 - **Subject:** 215 | **Exercise:** 5 | **Position:** stand

@@ -224,6 +224,22 @@ class PersonalizedROMCalibrator:
         for angle_name in baseline.tolerance:
             baseline.tolerance[angle_name] = float(baseline.tolerance[angle_name] * new_scale)
 
+    def rollback(self, subject_id: str) -> bool:
+        """Rolls back the subject's baseline to the previous historical state if available."""
+        if subject_id not in self.baselines:
+            return False
+        baseline = self.baselines[subject_id]
+        if not hasattr(baseline, 'history') or not baseline.history:
+            return False
+        
+        # Pop previous state from history list
+        prev_state = baseline.history.pop()
+        
+        # Restore angles and tolerances
+        baseline.baseline_angles = {k: np.array(v, dtype=np.float32) for k, v in prev_state["angles"].items()}
+        baseline.tolerance = dict(prev_state["tolerance"])
+        return True
+
     def save(self, file_path: str) -> None:
         payload = {
             'tolerance_scale': self.tolerance_scale,

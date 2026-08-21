@@ -1,0 +1,4 @@
+model,accuracy,balanced_accuracy,f1_macro,mcc,sensitivity,specificity,roc_auc,training_time_s,n_params
+Full ST-GAT,0.8644,0.7971,0.794,0.5881,0.683,0.9111,0.8604,53.11,53090
+w/o Graph Attention,0.8629,0.7814,0.786,0.5722,0.6434,0.9194,0.8546,74.79,53090
+w/o Temporal Attention,0.7393,0.6175,0.6132,0.2273,0.4113,0.8237,0.6116,41.38,53090

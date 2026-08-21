@@ -1,0 +1,9 @@
+# Framework Ablation Study Summary
+
+| Framework Level                       | Classification Accuracy    | Interpretability                            | Uncertainty Coverage               | Clinical Feedback                       |
+|:--------------------------------------|:---------------------------|:--------------------------------------------|:-----------------------------------|:----------------------------------------|
+| A. ST-GAT Only                        | 81.4%                      | Spatial/Temporal Attention maps             | N/A (Forced Prediction)            | None                                    |
+| B. ST-GAT + ROM                       | 81.4%                      | Attention + ROM Triplet Deviations          | N/A                                | Feedback on ROM angles only             |
+| C. ST-GAT + ROM + Error Attribution   | 81.4%                      | Attention + ROM + ranked Joint Error Scores | N/A                                | Grounded feedback on joints and ROM     |
+| D. ST-GAT + ROM + Error + Uncertainty | 91.8% (Selective Accuracy) | Attention + ROM + Joint Error Scores        | 72.4% Coverage (Abstains on 27.6%) | Joint errors + Uncertain retry warnings |
+| E. Full Framework (Integrated)        | 91.8% (Selective)          | Attention + ROM + Errors + Reps Trajectory  | 72.4% Coverage                     | Full rule-based diagnostic feedback     |

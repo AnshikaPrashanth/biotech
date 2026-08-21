@@ -1124,16 +1124,122 @@ def _plot_confidence_histogram_by_class(results: List[Dict]) -> None:
 
 
 # ─────────────────────────────────────────────────────────────
+# PART 8 — BASELINE MODELS — PLOTS & HELPERS
+# ─────────────────────────────────────────────────────────────
+
+def _plot_combined_roc_curves(baseline_preds: Dict[str, Tuple[List[int], List[int], List[float]]]) -> None:
+    from sklearn.metrics import roc_curve, auc
+    fig, ax = plt.subplots(figsize=(7, 6))
+    
+    # 1. Try to load ST-GAT (Ours) ROC curve from results/metrics.json
+    stgat_loaded = False
+    metrics_path = RESULTS_DIR / "metrics.json"
+    if metrics_path.exists():
+        try:
+            with open(metrics_path, "r") as f:
+                meta = json.load(f)
+                stgat_roc = meta.get("roc")
+                if stgat_roc:
+                    ax.plot(stgat_roc["fpr"], stgat_roc["tpr"], color="#E84855", lw=2.5,
+                            label=f"ST-GAT (Ours) (AUC = {stgat_roc['auc']:.4f})")
+                    stgat_loaded = True
+        except Exception as ex:
+            log.warning(f"Could not load ST-GAT ROC from metrics.json: {ex}")
+            
+    # 2. Plot baselines
+    palette = _sci_palette()
+    for idx, (name, (t_arr, p_arr, pr_arr)) in enumerate(baseline_preds.items()):
+        fpr, tpr, _ = roc_curve(t_arr, pr_arr)
+        auc_val = auc(fpr, tpr)
+        color = palette[(idx + 1) % len(palette)]
+        ax.plot(fpr, tpr, color=color, lw=1.5, linestyle="--",
+                label=f"{name} (AUC = {auc_val:.4f})")
+                
+    ax.plot([0, 1], [0, 1], "k:", lw=1.2, label="Random guessing")
+    ax.set_xlim([0, 1])
+    ax.set_ylim([0, 1.02])
+    ax.set_xlabel("False Positive Rate", fontsize=12)
+    ax.set_ylabel("True Positive Rate", fontsize=12)
+    ax.set_title("ROC Curves Comparison", fontsize=13, fontweight="bold")
+    ax.legend(fontsize=10, loc="lower right")
+    ax.grid(alpha=0.3)
+    plt.tight_layout()
+    fig_savefig(fig, "baseline_roc_curves.png")
+    plt.close("all")
+
+
+def _plot_combined_confusion_matrices(baseline_preds: Dict[str, Tuple[List[int], List[int], List[float]]]) -> None:
+    from sklearn.metrics import confusion_matrix
+    stgat_cm = None
+    metrics_path = RESULTS_DIR / "metrics.json"
+    if metrics_path.exists():
+        try:
+            with open(metrics_path, "r") as f:
+                meta = json.load(f)
+                stgat_cm = np.array(meta.get("confusion_matrix"))
+        except Exception:
+            pass
+
+    models_to_plot = []
+    if stgat_cm is not None:
+        models_to_plot.append(("ST-GAT (Ours)", stgat_cm))
+        
+    for name, (t_arr, p_arr, pr_arr) in baseline_preds.items():
+        cm = confusion_matrix(t_arr, p_arr)
+        models_to_plot.append((name, cm))
+        
+    n_models = len(models_to_plot)
+    if n_models == 0:
+        return
+        
+    cols = 3
+    rows = math.ceil(n_models / cols)
+    fig, axes = plt.subplots(rows, cols, figsize=(cols * 4, rows * 3.5))
+    if n_models == 1:
+        axes = np.array([axes])
+    else:
+        axes = axes.flat
+    
+    for ax, (name, cm) in zip(axes, models_to_plot):
+        im = ax.imshow(cm, cmap="Blues", alpha=0.8)
+        ax.set_xticks([0, 1])
+        ax.set_xticklabels(LABEL_NAMES, fontsize=9)
+        ax.set_yticks([0, 1])
+        ax.set_yticklabels(LABEL_NAMES, fontsize=9)
+        ax.set_title(name, fontsize=10, fontweight="bold")
+        ax.set_xlabel("Predicted", fontsize=8)
+        ax.set_ylabel("Actual", fontsize=8)
+        
+        thresh = cm.max() / 2
+        for i in range(2):
+            for j in range(2):
+                ax.text(j, i, str(cm[i, j]), ha="center", va="center",
+                        fontsize=12, color="white" if cm[i, j] > thresh else "black")
+                        
+    for ax in list(axes)[n_models:]:
+        ax.set_visible(False)
+        
+    plt.suptitle("Confusion Matrices Grid", fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    fig_savefig(fig, "baseline_confusion_matrices.png")
+    plt.close("all")
+
+
+# ─────────────────────────────────────────────────────────────
 # PART 8 — BASELINE MODELS
 # ─────────────────────────────────────────────────────────────
 
 def part8_baselines(entries: List[Dict]) -> pd.DataFrame:
     log.info("=" * 60)
-    log.info("PART 8 — Baseline Models")
+    log.info("PART 8 — Baseline Models (Optimized Sequential)")
     log.info("=" * 60)
 
     from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
     from sklearn.preprocessing import StandardScaler
+    from sklearn.decomposition import PCA
+    from sklearn.metrics import confusion_matrix
+    from joblib import Parallel, delayed
+    import gc
 
     try:
         import xgboost as xgb
@@ -1157,41 +1263,50 @@ def part8_baselines(entries: List[Dict]) -> pd.DataFrame:
 
     X = np.array([_flatten(e) for e in entries])
     y = np.array([e["movement_label"] for e in entries])
+    subject_ids = np.array([e["subject_id"] for e in entries])
 
-    # LOSO CV for sklearn models — uses PCA(100) to reduce 4800-dim features to 100 dims
-    # so sklearn classifiers run in minutes rather than hours.
-    from sklearn.decomposition import PCA
     N_PCA_COMPONENTS = min(100, X.shape[1] - 1, X.shape[0] // 2)
 
     def _loso_sklearn(model_cls, model_kwargs, name):
-        fold_preds, fold_targets, fold_probs = [], [], []
-        for subj in subjects:
-            train_mask = np.array([e["subject_id"] != subj for e in entries])
-            val_mask   = np.array([e["subject_id"] == subj  for e in entries])
+        # Run folds sequentially to keep memory footprint minimal and prevent system crash
+        def _run_fold(subj):
+            train_mask = (subject_ids != subj)
+            val_mask   = (subject_ids == subj)
             X_train = X[train_mask]; y_train = y[train_mask]
             X_val   = X[val_mask];   y_val   = y[val_mask]
-            # Scale then reduce dimensions — fit only on training fold (no leakage)
+            
             scaler = StandardScaler()
             X_train_s = scaler.fit_transform(X_train)
             X_val_s   = scaler.transform(X_val)
+            
             pca = PCA(n_components=N_PCA_COMPONENTS, random_state=SEED)
             X_train_r = pca.fit_transform(X_train_s)
             X_val_r   = pca.transform(X_val_s)
+            
             clf = model_cls(**model_kwargs)
             clf.fit(X_train_r, y_train)
             preds = clf.predict(X_val_r)
             probs = clf.predict_proba(X_val_r)[:, 1] if hasattr(clf, "predict_proba") else preds.astype(float)
+            
+            # Explicit cleanup
+            del scaler, pca, clf
+            gc.collect()
+            return y_val.tolist(), preds.tolist(), probs.tolist()
+
+        results_seq = [ _run_fold(subj) for subj in subjects ]
+
+        fold_targets, fold_preds, fold_probs = [], [], []
+        for targets, preds, probs in results_seq:
+            fold_targets.extend(targets)
             fold_preds.extend(preds)
-            fold_targets.extend(y_val.tolist())
             fold_probs.extend(probs)
         return fold_targets, fold_preds, fold_probs
 
     baseline_results = []
+    baseline_predictions = {} 
 
     baselines_cfg = [
-        # n_jobs=-1 uses all CPU cores; 100 trees on 100-dim PCA features runs in <2 min
-        ("Random Forest",     RandomForestClassifier,    {"n_estimators": 100, "random_state": SEED, "n_jobs": -1}),
-        # 50 trees on 100-dim PCA features runs in <3 min (was hanging on 4800-dim raw)
+        ("Random Forest",     RandomForestClassifier,    {"n_estimators": 100, "random_state": SEED, "n_jobs": 1}),
         ("Gradient Boosting", GradientBoostingClassifier,{"n_estimators": 50,  "random_state": SEED, "max_depth": 4}),
     ]
     if HAS_XGB:
@@ -1200,30 +1315,62 @@ def part8_baselines(entries: List[Dict]) -> pd.DataFrame:
                                {"n_estimators": 100, "random_state": SEED, "verbosity": 0, "eval_metric": "logloss"}))
 
     for name, cls, kwargs in baselines_cfg:
-        log.info(f"  Training baseline: {name}")
+        log.info(f"  Training baseline: {name} (sequential)...")
         t0 = time.time()
         try:
             t_arr, p_arr, pr_arr = _loso_sklearn(cls, kwargs, name)
             elapsed = time.time() - t0
             m = _quick_metrics(t_arr, p_arr, pr_arr, name, elapsed)
             baseline_results.append(m)
+            baseline_predictions[name] = (t_arr, p_arr, pr_arr)
         except Exception as ex:
             log.warning(f"  {name} failed: {ex}")
             baseline_results.append({"model": name, "error": str(ex)})
 
     # Sequence models (LSTM / GRU)
     for arch in ["LSTM", "GRU"]:
-        log.info(f"  Training baseline: {arch}")
+        log.info(f"  Training baseline: {arch} (sequential)...")
         try:
             t_arr, p_arr, pr_arr, elapsed = _loso_seq_model(entries, arch, seq_len)
             m = _quick_metrics(t_arr, p_arr, pr_arr, arch, elapsed)
             baseline_results.append(m)
+            baseline_predictions[arch] = (t_arr, p_arr, pr_arr)
         except Exception as ex:
             log.warning(f"  {arch} failed: {ex}")
             baseline_results.append({"model": arch, "error": str(ex)})
 
+    # Plots for confusion matrices and ROC curves of baselines and main model
+    _plot_combined_roc_curves(baseline_predictions)
+    _plot_combined_confusion_matrices(baseline_predictions)
+
     df_bl = pd.DataFrame(baseline_results)
+
+    # Load ST-GAT (Ours) metrics from metrics.json to include in comparison table
+    stgat_metrics = None
+    try:
+        metrics_path = RESULTS_DIR / "metrics.json"
+        if metrics_path.exists():
+            with open(metrics_path, "r") as f:
+                meta = json.load(f)
+                stgat_metrics = {
+                    "model": "ST-GAT (Ours)",
+                    "accuracy": round(meta.get("accuracy"), 4) if meta.get("accuracy") is not None else None,
+                    "balanced_accuracy": round(meta.get("balanced_accuracy"), 4) if meta.get("balanced_accuracy") is not None else None,
+                    "f1_macro": round(meta.get("f1_macro"), 4) if meta.get("f1_macro") is not None else None,
+                    "mcc": round(meta.get("mcc"), 4) if meta.get("mcc") is not None else None,
+                    "sensitivity": round(meta.get("sensitivity"), 4) if meta.get("sensitivity") is not None else None,
+                    "specificity": round(meta.get("specificity"), 4) if meta.get("specificity") is not None else None,
+                    "roc_auc": round(meta.get("roc")["auc"], 4) if meta.get("roc") is not None else None,
+                    "training_time_s": None,
+                }
+    except Exception as ex:
+        log.warning(f"Could not load ST-GAT metrics for comparison: {ex}")
+
+    if stgat_metrics is not None:
+        df_bl = pd.concat([pd.DataFrame([stgat_metrics]), df_bl], ignore_index=True)
+
     df_bl.to_csv(RESULTS_DIR / "tables" / "baseline_results.csv", index=False)
+    df_bl.to_csv(RESULTS_DIR / "baseline_results.csv", index=False)
     try:
         df_bl.to_excel(RESULTS_DIR / "tables" / "baseline_metrics.xlsx", index=False)
     except Exception:
@@ -1259,13 +1406,20 @@ def _quick_metrics(targets, preds, probs, name, elapsed):
 
 
 def _loso_seq_model(entries, arch: str, seq_len: int):
-    """Simple LSTM/GRU baseline trained with LOSO CV."""
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    """Simple LSTM/GRU baseline trained sequentially with LOSO CV."""
+    import gc
     subjects = sorted(set(e["subject_id"] for e in entries))
     fold_targets, fold_preds, fold_probs = [], [], []
     t0 = time.time()
+    
+    # We must define device locally
+    dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    # Limit PyTorch CPU threads to prevent CPU thrashing
+    if dev.type == "cpu":
+        torch.set_num_threads(2)
 
-    for subj in tqdm(subjects, desc=f"{arch} LOSO", ncols=80):
+    for subj in tqdm(subjects, desc=f"{arch} LOSO Sequential", ncols=80):
         train_entries = [e for e in entries if e["subject_id"] != subj]
         val_entries   = [e for e in entries if e["subject_id"] == subj]
         if not train_entries or not val_entries:
@@ -1282,36 +1436,35 @@ def _loso_seq_model(entries, arch: str, seq_len: int):
                                    dropout=0.2, bidirectional=True)
                 self.fc  = torch.nn.Linear(hid_dim * 2, 2)
             def forward(self, x):
-                # x: (B, T, 25, 3) -> (B, T, 75)
                 B, T, J, C = x.shape
                 x = x.reshape(B, T, J * C)
                 out, _ = self.rnn(x)
                 return self.fc(out[:, -1, :])
 
-        model = SeqModel().to(device)
+        model = SeqModel().to(dev)
         optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-4)
         criterion = torch.nn.CrossEntropyLoss()
 
-        def _make_loader(ents, shuffle):
-            from torch.utils.data import DataLoader
-            ds = IntelliRehabSequenceDataset(ents, augment=shuffle, sequence_length=seq_len)
-            return DataLoader(ds, batch_size=32, shuffle=shuffle, num_workers=0, collate_fn=sequence_collate_fn)
+        from torch.utils.data import DataLoader
+        train_ds = IntelliRehabSequenceDataset(train_entries, augment=True, sequence_length=seq_len)
+        train_loader = DataLoader(train_ds, batch_size=32, shuffle=True, num_workers=0, collate_fn=sequence_collate_fn)
 
-        train_loader = _make_loader(train_entries, True)
-
-        for epoch in range(10):
+        # Train for 2 epochs
+        for epoch in range(2):
             model.train()
             for batch in train_loader:
-                seqs   = batch["sequence"].to(device)
-                labels = batch["label"].to(device)
+                seqs   = batch["sequence"].to(dev)
+                labels = batch["label"].to(dev)
                 loss   = criterion(model(seqs), labels)
                 optimizer.zero_grad(); loss.backward(); optimizer.step()
 
-        val_loader = _make_loader(val_entries, False)
+        val_ds = IntelliRehabSequenceDataset(val_entries, augment=False, sequence_length=seq_len)
+        val_loader = DataLoader(val_ds, batch_size=32, shuffle=False, num_workers=0, collate_fn=sequence_collate_fn)
+        
         model.eval()
         with torch.no_grad():
             for batch in val_loader:
-                seqs   = batch["sequence"].to(device)
+                seqs   = batch["sequence"].to(dev)
                 labels = batch["label"].cpu().numpy()
                 logits = model(seqs)
                 probs  = torch.softmax(logits, dim=-1).cpu().numpy()
@@ -1319,6 +1472,12 @@ def _loso_seq_model(entries, arch: str, seq_len: int):
                 fold_targets.extend(labels.tolist())
                 fold_preds.extend(preds.tolist())
                 fold_probs.extend(probs[:, 1].tolist())
+
+        # Cleanup memory after each subject fold
+        del model, optimizer, train_ds, train_loader, val_ds, val_loader
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
     return fold_targets, fold_preds, fold_probs, time.time() - t0
 
@@ -1367,6 +1526,7 @@ def part9_ablation(entries: List[Dict], device: torch.device) -> pd.DataFrame:
     log.info("PART 9 — Ablation Study")
     log.info("=" * 60)
 
+    import gc
     seq_len  = TRAINING_CONFIG["sequence_length"]
     subjects = sorted(set(e["subject_id"] for e in entries))
 
@@ -1385,11 +1545,23 @@ def part9_ablation(entries: List[Dict], device: torch.device) -> pd.DataFrame:
                 ckpt = torch.load(str(fold_ckpt), map_location=device, weights_only=True)
                 state = ckpt.get("model_state", ckpt)
                 model.load_state_dict(state, strict=False)
+            
+            # Post-load modification for graph attention ablation
+            if getattr(model, "ablation_no_graph_attn", False):
+                import torch.nn as nn
+                for block in [model.spatial1, model.spatial2]:
+                    nn.init.zeros_(block.gat.att_src)
+                    nn.init.zeros_(block.gat.att_dst)
+
             model.eval()
             val_res = run_inference(model, val_ents, device, batch_size=16, desc=f"  Ablation val {subj}")
             all_t.extend([r["true_label"] for r in val_res])
             all_p.extend([r["pred_label"] for r in val_res])
             all_pr.extend([r["prob_compensated"] for r in val_res])
+            
+            # Explicit cleanup
+            del model
+            gc.collect()
         return all_t, all_p, all_pr
 
     ablation_configs = {}
@@ -1401,23 +1573,53 @@ def part9_ablation(entries: List[Dict], device: torch.device) -> pd.DataFrame:
 
     # Without graph attention (replace GATConv with linear)
     def _no_graph_attn():
-        import copy
         m = stgat_from_config({"hidden_dim": 64, "heads": 4, "dropout": 0.0})
-        # Disable spatial attention by zeroing out gat modules
-        for block in [m.spatial1, m.spatial2]:
-            nn.init.zeros_(block.gat.lin_src.weight)
-            nn.init.zeros_(block.gat.lin_dst.weight)
+        m.ablation_no_graph_attn = True
         return m
     ablation_configs["w/o Graph Attention"] = _no_graph_attn
 
     # Without temporal attention (skip temporal_attention block)
     class STGATNoTemporalAttn(STGAT):
         def forward(self, x):
-            out = super().forward(x)
-            # Reset frame attention to uniform
-            fa_shape = out["frame_attention"].shape
-            out["frame_attention"] = torch.ones(fa_shape, device=x.device) / fa_shape[-1]
-            return out
+            from src.graph import build_batched_edge_index
+            if self.export_mode:
+                return super().forward(x)
+            
+            batch_size, seq_len, num_nodes, num_features = x.shape
+            x_proj = self.input_proj(x)
+            
+            flattened = x_proj.reshape(batch_size * seq_len * num_nodes, -1)
+            edge_index = build_batched_edge_index(self.spatial_edge_index, batch_size * seq_len, num_nodes)
+            
+            spatial_out1, edge_attn1 = self.spatial1(flattened, edge_index, return_attn=True)
+            spatial_out2, edge_attn2 = self.spatial2(spatial_out1, edge_index, return_attn=True)
+            
+            spatial_out = spatial_out2.reshape(batch_size, seq_len, num_nodes, -1).permute(0, 2, 3, 1)
+            
+            temporal_out = self.temporal1(spatial_out)
+            temporal_out = self.temporal2(temporal_out)
+            
+            # Bypass Temporal Attention: use temporal_out directly with LayerNorm
+            out = temporal_out.permute(0, 1, 3, 2)
+            out = self.temporal_attention.norm(out)
+            out = out.permute(0, 1, 3, 2)
+            
+            pooled = out.mean(dim=3).mean(dim=1)
+            logits = self.classifier(pooled)
+            probabilities = torch.softmax(logits, dim=-1)
+            
+            edge_attention = edge_attn2.reshape(batch_size, seq_len, -1).mean(dim=1)
+            joint_attention = self._aggregate_node_attention(edge_index, edge_attn2, batch_size, seq_len, num_nodes)
+            frame_attention = torch.ones((batch_size, seq_len), device=x.device) / seq_len
+            
+            return {
+                'logits': logits,
+                'probabilities': probabilities,
+                'joint_attention': joint_attention,
+                'frame_attention': frame_attention,
+                'edge_attention': edge_attention,
+            }
+
     def _no_temp_attn():
         m = STGATNoTemporalAttn(input_dim=3, hidden_dim=64, num_classes=2, heads=4, dropout=0.0)
         return m
@@ -2023,12 +2225,28 @@ def main():
         df_ablation = part9_ablation(entries, device)
 
     if 10 in wanted and not args.no_statistics:
+        if df_baselines is None:
+            bl_path = RESULTS_DIR / "baseline_results.csv"
+            if bl_path.exists():
+                df_baselines = pd.read_csv(bl_path)
         part10_statistics(results, df_baselines)
 
     if 11 in wanted:
         part11_publication_figures(results, df_subj)
 
     if 12 in wanted:
+        if df_baselines is None:
+            bl_path = RESULTS_DIR / "baseline_results.csv"
+            if bl_path.exists():
+                df_baselines = pd.read_csv(bl_path)
+        if df_ablation is None:
+            abl_path = RESULTS_DIR / "tables" / "ablation_table.csv"
+            if abl_path.exists():
+                df_ablation = pd.read_csv(abl_path)
+        if df_subj is None:
+            subj_path = RESULTS_DIR / "subject_results.csv"
+            if subj_path.exists():
+                df_subj = pd.read_csv(subj_path)
         part12_final_report(entries, metrics or {}, df_subj, df_baselines, df_ablation, args)
 
     log.info("")
