@@ -237,3 +237,79 @@ def test_report_generation():
         assert os.path.exists(json_p)
         assert os.path.exists(md_p)
         assert os.path.exists(html_p)
+
+def test_3d_skeleton_layout_and_visibility():
+    """Verify 3D skeleton plot renders upright with true metric aspectmode and visible joints."""
+    from src.visualization import plot_3d_skeleton
+    from src.graph import INTELLIREHAB_JOINTS
+    
+    # Create an upright mock skeleton of 25 joints
+    dummy_joints = np.zeros((25, 3), dtype=np.float32)
+    dummy_joints[3] = [0.0, 0.95, -0.1]   # Head (Height Y = +0.95)
+    dummy_joints[0] = [0.0, 0.0, 0.0]     # SpineBase (Height Y = 0.0)
+    dummy_joints[15] = [-0.15, -0.95, 0.0] # FootLeft (Height Y = -0.95)
+    
+    fig = plot_3d_skeleton(dummy_joints, attention={"Head": 0.85, "SpineBase": 0.4})
+    
+    # 1. Verify 1:1:1 physical meter aspect scaling
+    assert fig.layout.scene.aspectmode == "data"
+    
+    # 2. Verify Plotly Z axis is height (+Z is UP)
+    assert fig.layout.scene.camera.up.z == 1
+    
+    # 3. Find bones trace and markers trace
+    bones_trace = fig.data[0]
+    marker_trace = fig.data[2]  # trace 0: bones, trace 1: floor level, trace 2: joints
+    
+    # 4. Verify all 25 joints are present
+    assert len(marker_trace.x) == 25
+    assert len(marker_trace.y) == 25
+    assert len(marker_trace.z) == 25
+    
+    # 5. Verify Head is higher than SpineBase, which is higher than FootLeft in Plotly Z
+    assert marker_trace.z[3] > marker_trace.z[0] > marker_trace.z[15]
+
+def test_label_3_exclusion():
+    """Verify that files with Label 3 raise ValueError and cannot enter the dataset."""
+    from src.dataset import extract_movement_label
+    with pytest.raises(ValueError) as excinfo:
+        extract_movement_label("SkeletonData/SkeletonData/RawData/101_20160101_1_1_3_pos.txt")
+    assert "Label 3" in str(excinfo.value)
+
+def test_hand_wrist_non_duplication():
+    """Verify Wrist and Hand landmarks are not duplicated and have non-zero distance."""
+    dummy_mp = np.random.normal(size=(33, 3)).astype(np.float32)
+    mapped = convert_mediapipe_landmarks(dummy_mp)
+    wrist_left = mapped[6]
+    hand_left = mapped[7]
+    wrist_right = mapped[10]
+    hand_right = mapped[11]
+    
+    assert not np.allclose(wrist_left, hand_left)
+    assert not np.allclose(wrist_right, hand_right)
+    assert np.linalg.norm(wrist_left - hand_left) > 1e-4
+    assert np.linalg.norm(wrist_right - hand_right) > 1e-4
+
+def test_temporal_attention_padding_mask_invariance():
+    """Verify that modifying padded frames does NOT change model predictions when key_padding_mask is passed."""
+    from src.model import stgat_from_config
+    model = stgat_from_config({'hidden_dim': 64, 'heads': 4, 'dropout': 0.0})
+    model.eval()
+    
+    # Sequence of 64 frames where first 30 frames are valid and last 34 are padded
+    seq1 = torch.randn(1, 64, 25, 3)
+    mask = torch.zeros(1, 64, dtype=torch.bool)
+    mask[0, :30] = True  # valid frames
+    
+    # Sequence 2 has identical valid frames (0..30) but different random values in padded frames (30..64)
+    seq2 = seq1.clone()
+    seq2[0, 30:] = torch.randn(34, 25, 3)
+    
+    with torch.no_grad():
+        out1 = model(seq1, mask=mask)
+        out2 = model(seq2, mask=mask)
+        
+    assert torch.allclose(out1['logits'], out2['logits'], atol=1e-5)
+    assert torch.allclose(out1['probabilities'], out2['probabilities'], atol=1e-5)
+
+

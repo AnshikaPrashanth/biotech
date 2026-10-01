@@ -1,4 +1,5 @@
 import argparse
+from functools import partial
 import os
 import json
 from pathlib import Path
@@ -91,6 +92,7 @@ def train_one_epoch(
     
     for batch in loader:
         sequences = batch['sequence'].to(device, non_blocking=True)
+        frame_mask = batch['mask'].to(device, non_blocking=True)
         labels = batch['label'].to(device, non_blocking=True)
         optimizer.zero_grad()
         
@@ -100,7 +102,7 @@ def train_one_epoch(
             autocast_ctx = torch.cuda.amp.autocast(enabled=device.type == 'cuda')
             
         with autocast_ctx:
-            outputs = model(sequences)
+            outputs = model(sequences, mask=frame_mask)
             loss = criterion(outputs['logits'], labels)
             
         scaler.scale(loss).backward()
@@ -135,9 +137,10 @@ def evaluate(
     with torch.no_grad():
         for batch in loader:
             sequences = batch['sequence'].to(device, non_blocking=True)
+            frame_mask = batch['mask'].to(device, non_blocking=True)
             labels = batch['label'].to(device, non_blocking=True)
             
-            outputs = model(sequences)
+            outputs = model(sequences, mask=frame_mask)
             logits = outputs['logits']
             probs = torch.softmax(logits, dim=-1)[:, 1]
             preds = torch.argmax(logits, dim=-1)
@@ -189,8 +192,10 @@ def run_fold(
     fold_name: str,
     device: torch.device,
     args: argparse.Namespace,
-    writer: SummaryWriter,
-) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+    writer: Optional[SummaryWriter],
+    training_config: Optional[Dict[str, Any]] = None,
+) -> Tuple[Dict[str, Any], List[Dict[str, Any]], int]:
+    config = training_config or TRAINING_CONFIG
     # Check if sampler is used (default is WeightedRandomSampler).
     # If sampler is active, we disable class weighting in the loss to prevent double-penalization bias.
     use_class_weights = True
@@ -210,9 +215,9 @@ def run_fold(
         class_weights = None
         
     # Configure Loss Selection
-    loss_type = TRAINING_CONFIG.get('loss_type', 'weighted_ce')
+    loss_type = config.get('loss_type', 'weighted_ce')
     if loss_type == 'focal':
-        criterion = FocalLoss(alpha=class_weights, gamma=TRAINING_CONFIG.get('focal_gamma', 2.0))
+        criterion = FocalLoss(alpha=class_weights, gamma=config.get('focal_gamma', 2.0))
     else:
         criterion = nn.CrossEntropyLoss(weight=class_weights)
         
@@ -224,37 +229,42 @@ def run_fold(
     else:
         scaler = torch.cuda.amp.GradScaler(enabled=device.type == 'cuda')
     
-    best_val_loss = float('inf')
+    best_val_error_rate = float('inf')
     best_val_acc = 0.0
     patience_counter = 0
     best_state = None
     best_metrics = None
     best_attentions = []
+    best_epoch = 0
+    best_train_loss = float('nan')
     
     print(f"\n--- Starting {fold_name} ---")
     pbar = tqdm(range(args.epochs), desc="Training Fold")
     for epoch in pbar:
         train_loss, train_acc = train_one_epoch(model, train_loader, criterion, optimizer, scaler, device)
         val_metrics, val_attns = evaluate(model, val_loader, device)
-        val_loss = 1.0 - val_metrics['accuracy']
+        val_error_rate = 1.0 - val_metrics['accuracy']
         
         # Log to TensorBoard
-        writer.add_scalar(f'{fold_name}/train_loss', train_loss, epoch)
-        writer.add_scalar(f'{fold_name}/train_accuracy', train_acc, epoch)
-        writer.add_scalar(f'{fold_name}/val_accuracy', val_metrics['accuracy'], epoch)
-        writer.add_scalar(f'{fold_name}/val_balanced_accuracy', val_metrics['balanced_accuracy'], epoch)
-        writer.add_scalar(f'{fold_name}/val_f1_macro', val_metrics['f1_macro'], epoch)
+        if writer is not None:
+            writer.add_scalar(f'{fold_name}/train_loss', train_loss, epoch)
+            writer.add_scalar(f'{fold_name}/train_accuracy', train_acc, epoch)
+            writer.add_scalar(f'{fold_name}/val_accuracy', val_metrics['accuracy'], epoch)
+            writer.add_scalar(f'{fold_name}/val_balanced_accuracy', val_metrics['balanced_accuracy'], epoch)
+            writer.add_scalar(f'{fold_name}/val_f1_macro', val_metrics['f1_macro'], epoch)
         
         scheduler.step()
         
         # Early Stopping check
-        if val_loss + TRAINING_CONFIG['early_stopping_delta'] < best_val_loss:
-            best_val_loss = val_loss
+        if val_error_rate + config['early_stopping_delta'] < best_val_error_rate:
+            best_val_error_rate = val_error_rate
             best_val_acc = val_metrics['accuracy']
             patience_counter = 0
             best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
             best_metrics = val_metrics
             best_attentions = val_attns
+            best_epoch = epoch + 1
+            best_train_loss = train_loss
         else:
             patience_counter += 1
             
@@ -272,7 +282,7 @@ def run_fold(
     if best_state is not None:
         model.load_state_dict(best_state)
         
-    return best_metrics, best_attentions
+    return best_metrics, best_attentions, best_epoch, best_train_loss
 
 def build_model() -> nn.Module:
     config = {
@@ -358,7 +368,7 @@ def main() -> None:
             batch_size=args.batch_size,
             sampler=sampler,
             num_workers=TRAINING_CONFIG['num_workers'],
-            collate_fn=sequence_collate_fn,
+            collate_fn=partial(sequence_collate_fn, max_length=args.sequence_length),
             pin_memory=pin_mem,
         )
         val_loader = DataLoader(
@@ -366,7 +376,7 @@ def main() -> None:
             batch_size=args.batch_size,
             shuffle=False,
             num_workers=TRAINING_CONFIG['num_workers'],
-            collate_fn=sequence_collate_fn,
+            collate_fn=partial(sequence_collate_fn, max_length=args.sequence_length),
             pin_memory=pin_mem,
         )
         
@@ -397,7 +407,7 @@ def main() -> None:
             print(f"Resuming weights from checkpoint: {args.resume}")
             model.load_state_dict(torch.load(args.resume, map_location=device)['model_state'])
             
-        val_metrics, val_attentions = run_fold(
+        val_metrics, val_attentions, _, _ = run_fold(
             model, 
             train_loader, 
             val_loader, 

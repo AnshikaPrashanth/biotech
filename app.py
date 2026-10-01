@@ -300,8 +300,32 @@ def main() -> None:
             
             with col1:
                 st.subheader("🧬 3D Skeleton Attention Layout")
-                # Highlight joints by model attention
-                fig_sk = plot_3d_skeleton(sequence_data[0], attention=report['attention']['joint_attention'])
+                num_frames = len(sequence_data)
+                peak_frame = 0
+                if 'frame_attention' in report['attention'] and report['attention']['frame_attention']:
+                    peak_frame = int(np.argmax(report['attention']['frame_attention']))
+                    peak_frame = min(peak_frame, num_frames - 1)
+                
+                if num_frames > 1:
+                    sk_col_a, sk_col_b = st.columns([3, 2])
+                    with sk_col_a:
+                        selected_frame = st.slider(
+                            "Skeleton Frame Index", 
+                            0, num_frames - 1, value=peak_frame,
+                            help="Scrub through movement frames. Default is set to the peak temporal attention frame."
+                        )
+                    with sk_col_b:
+                        show_labels = st.checkbox("Show Joint Tags", value=False, help="Toggle 3D text labels on all 25 joints.")
+                else:
+                    selected_frame = 0
+                    show_labels = st.checkbox("Show Joint Tags", value=False, help="Toggle 3D text labels on all 25 joints.")
+                    
+                fig_sk = plot_3d_skeleton(
+                    sequence_data[selected_frame], 
+                    attention=report['attention']['joint_attention'],
+                    show_labels=show_labels,
+                    title=f"3D Skeleton (Frame {selected_frame} of {num_frames - 1})"
+                )
                 st.plotly_chart(fig_sk, use_container_width=True)
                 
             with col2:

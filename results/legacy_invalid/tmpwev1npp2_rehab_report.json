@@ -1,0 +1,500 @@
+{
+  "metadata": {
+    "subject_id": "tmpwev1npp2",
+    "exercise_type": "-0.1209319",
+    "source_type": "txt",
+    "frame_count": 74,
+    "duration_seconds": 2.466666666666667
+  },
+  "prediction": {
+    "verdict": "Compensated",
+    "confidence": 0.8095288872718811,
+    "probabilities": [
+      0.1904711276292801,
+      0.8095288872718811
+    ],
+    "class_idx": 1
+  },
+  "uncertainty": {
+    "uncertainty_score": 0.1904711127281189,
+    "decision_status": "Compensated",
+    "confidence_threshold": 0.7
+  },
+  "movement_quality": {
+    "score": 88.00000000000001,
+    "components": {
+      "rom": 80.0,
+      "symmetry": 100.0,
+      "temporal": 100.0,
+      "biomechanical": 80.0
+    }
+  },
+  "rom_analysis": {
+    "tolerance_scale": 1.0,
+    "calibrated_deviations": null,
+    "overall_rom_confidence": 0.0
+  },
+  "error_attribution": {
+    "overall_joint_scores": {
+      "SpineBase": 0.18749973489172989,
+      "SpineMid": 0.16666643598191772,
+      "Neck": 0.16666643598191772,
+      "Head": 0.12499982326115325,
+      "ShoulderLeft": 0.16666643598191772,
+      "ElbowLeft": 0.16666643598191772,
+      "WristLeft": 0.18749973489172989,
+      "HandLeft": 0.16666643598191772,
+      "ShoulderRight": 0.16666643598191772,
+      "ElbowRight": 0.16666643598191772,
+      "WristRight": 0.18749973489172989,
+      "HandRight": 0.16666643598191772,
+      "HipLeft": 0.16666643598191772,
+      "KneeLeft": 0.16666643598191772,
+      "AnkleLeft": 0.16666643598191772,
+      "FootLeft": 0.12499982326115325,
+      "HipRight": 0.16666643598191772,
+      "KneeRight": 0.16666643598191772,
+      "AnkleRight": 0.16666643598191772,
+      "FootRight": 0.12499982326115325,
+      "SpineShoulder": 0.19999975000035347,
+      "HandTipLeft": 0.12499982326115325,
+      "ThumbLeft": 0.12499982326115325,
+      "HandTipRight": 0.12499982326115325,
+      "ThumbRight": 0.12499982326115325
+    },
+    "joint_error_details": {
+      "SpineBase": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.75,
+        "error_score": 0.18749973489172989
+      },
+      "SpineMid": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "Neck": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "Head": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.5,
+        "error_score": 0.12499982326115325
+      },
+      "ShoulderLeft": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "ElbowLeft": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "WristLeft": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.75,
+        "error_score": 0.18749973489172989
+      },
+      "HandLeft": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "ShoulderRight": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "ElbowRight": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "WristRight": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.75,
+        "error_score": 0.18749973489172989
+      },
+      "HandRight": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "HipLeft": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "KneeLeft": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "AnkleLeft": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "FootLeft": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.5,
+        "error_score": 0.12499982326115325
+      },
+      "HipRight": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "KneeRight": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "AnkleRight": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.6666666865348816,
+        "error_score": 0.16666643598191772
+      },
+      "FootRight": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.5,
+        "error_score": 0.12499982326115325
+      },
+      "SpineShoulder": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.8000001311302185,
+        "error_score": 0.19999975000035347
+      },
+      "HandTipLeft": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.5,
+        "error_score": 0.12499982326115325
+      },
+      "ThumbLeft": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.5,
+        "error_score": 0.12499982326115325
+      },
+      "HandTipRight": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.5,
+        "error_score": 0.12499982326115325
+      },
+      "ThumbRight": {
+        "rom_deviation": 0.0,
+        "symmetry_deviation": 0.0,
+        "velocity_deviation": 0.0,
+        "acceleration_deviation": 0.0,
+        "attention_contribution": 0.5,
+        "error_score": 0.12499982326115325
+      }
+    },
+    "top_error_joints": [
+      [
+        "SpineShoulder",
+        0.19999975000035347
+      ],
+      [
+        "SpineBase",
+        0.18749973489172989
+      ],
+      [
+        "WristLeft",
+        0.18749973489172989
+      ],
+      [
+        "WristRight",
+        0.18749973489172989
+      ],
+      [
+        "SpineMid",
+        0.16666643598191772
+      ],
+      [
+        "Neck",
+        0.16666643598191772
+      ],
+      [
+        "ShoulderLeft",
+        0.16666643598191772
+      ],
+      [
+        "ElbowLeft",
+        0.16666643598191772
+      ],
+      [
+        "HandLeft",
+        0.16666643598191772
+      ],
+      [
+        "ShoulderRight",
+        0.16666643598191772
+      ],
+      [
+        "ElbowRight",
+        0.16666643598191772
+      ],
+      [
+        "HandRight",
+        0.16666643598191772
+      ],
+      [
+        "HipLeft",
+        0.16666643598191772
+      ],
+      [
+        "KneeLeft",
+        0.16666643598191772
+      ],
+      [
+        "AnkleLeft",
+        0.16666643598191772
+      ],
+      [
+        "HipRight",
+        0.16666643598191772
+      ],
+      [
+        "KneeRight",
+        0.16666643598191772
+      ],
+      [
+        "AnkleRight",
+        0.16666643598191772
+      ],
+      [
+        "Head",
+        0.12499982326115325
+      ],
+      [
+        "FootLeft",
+        0.12499982326115325
+      ],
+      [
+        "FootRight",
+        0.12499982326115325
+      ],
+      [
+        "HandTipLeft",
+        0.12499982326115325
+      ],
+      [
+        "ThumbLeft",
+        0.12499982326115325
+      ],
+      [
+        "HandTipRight",
+        0.12499982326115325
+      ],
+      [
+        "ThumbRight",
+        0.12499982326115325
+      ]
+    ]
+  },
+  "attention": {
+    "joint_attention": {
+      "SpineBase": 0.75,
+      "SpineMid": 0.6666666865348816,
+      "Neck": 0.6666666865348816,
+      "Head": 0.5,
+      "ShoulderLeft": 0.6666666865348816,
+      "ElbowLeft": 0.6666666865348816,
+      "WristLeft": 0.75,
+      "HandLeft": 0.6666666865348816,
+      "ShoulderRight": 0.6666666865348816,
+      "ElbowRight": 0.6666666865348816,
+      "WristRight": 0.75,
+      "HandRight": 0.6666666865348816,
+      "HipLeft": 0.6666666865348816,
+      "KneeLeft": 0.6666666865348816,
+      "AnkleLeft": 0.6666666865348816,
+      "FootLeft": 0.5,
+      "HipRight": 0.6666666865348816,
+      "KneeRight": 0.6666666865348816,
+      "AnkleRight": 0.6666666865348816,
+      "FootRight": 0.5,
+      "SpineShoulder": 0.8000001311302185,
+      "HandTipLeft": 0.5,
+      "ThumbLeft": 0.5,
+      "HandTipRight": 0.5,
+      "ThumbRight": 0.5
+    },
+    "frame_attention": [
+      0.011864975094795227,
+      0.015452665276825428,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615683734417,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615683734417,
+      0.01576615869998932,
+      0.01576615683734417,
+      0.01576615497469902,
+      0.01576615683734417,
+      0.01576615497469902,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615683734417,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615683734417,
+      0.01576615869998932,
+      0.01576615683734417,
+      0.01576615497469902,
+      0.01576615683734417,
+      0.01576615497469902,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615683734417,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615683734417,
+      0.01576615869998932,
+      0.01576615683734417,
+      0.01576615497469902,
+      0.01576615683734417,
+      0.01576615497469902,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615683734417,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615869998932,
+      0.01576615683734417,
+      0.01576615869998932,
+      0.01576615683734417,
+      0.015750780701637268,
+      0.010962315835058689
+    ]
+  },
+  "repetitions": {
+    "count": 1,
+    "reps_detail": [
+      {
+        "rep_index": 1,
+        "prediction": "Compensated",
+        "confidence": 0.8102235794067383,
+        "movement_quality_score": 88.00000000000001,
+        "rom_deviation": 0.0,
+        "top_error_joints": [
+          [
+            "SpineShoulder",
+            0.19999975000035347
+          ],
+          [
+            "SpineBase",
+            0.18749973489172989
+          ],
+          [
+            "WristLeft",
+            0.18749973489172989
+          ]
+        ]
+      }
+    ],
+    "degradation_slope": 0.0,
+    "trajectory": "Stable"
+  },
+  "baseline_adaptation": {
+    "drift_enabled": true,
+    "baseline_updated": false
+  },
+  "feedback": [
+    "Excellent execution! Your range of motion and symmetry conform well to your personalized baseline."
+  ]
+}

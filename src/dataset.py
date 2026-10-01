@@ -31,8 +31,9 @@ def extract_subject_id(file_path: str) -> str:
 def extract_movement_label(file_path: str) -> int:
     """Extracts movement quality target label from filename.
     CorrectLabel (5th component, split by '_'):
-      1 = Correct/Healthy -> Map to 0 (Healthy)
-      2 = Incorrect/Compensated -> Map to 1 (Compensated)
+      1 = Correct execution -> Map to 0 (Correct execution)
+      2 = Incorrect execution -> Map to 1 (Incorrect execution)
+      3 = Unclassified / Ambiguous -> Raise ValueError (Excluded)
     """
     basename = os.path.basename(file_path)
     name_without_ext = os.path.splitext(basename)[0]
@@ -42,13 +43,16 @@ def extract_movement_label(file_path: str) -> int:
         try:
             val = int(correct_label_str)
             if val == 1:
-                return 0  # Healthy
+                return 0  # Correct execution
             elif val == 2:
-                return 1  # Compensated
-        except ValueError:
+                return 1  # Incorrect execution
+            elif val == 3:
+                raise ValueError(f"Label 3 (unclassified repetition) excluded for file {file_path}")
+        except ValueError as ve:
+            if "Label 3" in str(ve):
+                raise ve
             pass
-    # Gestures are 0-8. In some parts, gesture 0 is inherently healthy stance.
-    return 0  # Fallback to healthy
+    raise ValueError(f"Invalid or missing movement label in filename: {file_path}")
 
 def parse_intellirehab_file(file_path: str) -> Tuple[np.ndarray, str, str, int]:
     """Parse a single IntelliRehabDS skeleton file into raw 3D joint positions,
@@ -202,9 +206,9 @@ def make_weighted_sampler(entries: List[Dict], target_key: str = 'movement_label
     weights = [1.0 / max(class_counts[t], 1) for t in targets]
     return WeightedRandomSampler(weights, num_samples=len(weights), replacement=True)
 
-def sequence_collate_fn(batch: List[Dict]) -> Dict[str, torch.Tensor]:
+def sequence_collate_fn(batch: List[Dict], max_length: Optional[int] = None) -> Dict[str, torch.Tensor]:
     sequences = [item['sequence'].numpy() if isinstance(item['sequence'], torch.Tensor) else item['sequence'] for item in batch]
-    padded_sequences, mask = pad_sequences(sequences)
+    padded_sequences, mask = pad_sequences(sequences, max_length=max_length)
     labels = torch.stack([item['label'] for item in batch])
     subject_ids = [item['subject_id'] for item in batch]
     exercise_types = [item['exercise_type'] for item in batch]
@@ -358,13 +362,13 @@ def convert_mediapipe_landmarks(landmarks: np.ndarray) -> np.ndarray:
     # Upper extremities
     coords[5] = landmarks[13]  # ElbowLeft
     coords[6] = landmarks[15]  # WristLeft
-    coords[7] = landmarks[15]  # HandLeft (midpoint/wrist fallback)
+    coords[7] = (landmarks[15] + landmarks[19]) / 2.0  # HandLeft (midpoint between Wrist and Left Index)
     coords[21] = landmarks[19] # HandTipLeft (Left Index)
     coords[22] = landmarks[21] # ThumbLeft
     
     coords[9] = landmarks[14]  # ElbowRight
     coords[10] = landmarks[16] # WristRight
-    coords[11] = landmarks[16] # HandRight
+    coords[11] = (landmarks[16] + landmarks[20]) / 2.0 # HandRight (midpoint between Wrist and Right Index)
     coords[23] = landmarks[20] # HandTipRight (Right Index)
     coords[24] = landmarks[22] # ThumbRight
     

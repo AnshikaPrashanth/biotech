@@ -40,8 +40,10 @@ class TemporalConvBlock(nn.Module):
         self.act = nn.ReLU()
         self.dropout = nn.Dropout(dropout)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
         batch, nodes, channels, seq_len = x.shape
+        if mask is not None:
+            x = x * mask.unsqueeze(1).unsqueeze(2).to(x.dtype)
         x_in = x
         # Collapse batch and node dimensions to perform 1D temporal convolution
         x = x.reshape(batch * nodes, channels, seq_len)
@@ -50,6 +52,8 @@ class TemporalConvBlock(nn.Module):
         x = self.act(x)
         x = self.dropout(x)
         x = x.reshape(batch, nodes, channels, seq_len)
+        if mask is not None:
+            x = x * mask.unsqueeze(1).unsqueeze(2).to(x.dtype)
         return x + x_in
 
 class TemporalAttentionBlock(nn.Module):
@@ -58,31 +62,57 @@ class TemporalAttentionBlock(nn.Module):
         self.attn = nn.MultiheadAttention(embed_dim=channels, num_heads=num_heads, dropout=dropout, batch_first=False)
         self.norm = nn.LayerNorm(channels)
 
-    def forward(self, x: torch.Tensor, return_attn: bool = True) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
+    def forward(self, x: torch.Tensor, return_attn: bool = True, mask: Optional[torch.Tensor] = None) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
         batch, nodes, channels, seq_len = x.shape
+
+        if mask is not None:
+            # Zero out padded frames before attention so masked timesteps cannot influence valid frames.
+            mask_4d = mask.unsqueeze(1).unsqueeze(2).to(x.dtype)
+            x = x * mask_4d
+
         # Permute to (seq_len, batch * nodes, channels) for PyTorch MultiheadAttention
         query = x.permute(3, 0, 1, 2).reshape(seq_len, batch * nodes, channels)
-        
+
+        # Build key_padding_mask for PyTorch MHA (True indicates padded/invalid frame)
+        key_padding_mask = None
+        if mask is not None:
+            # mask shape: (batch, seq_len), True for valid, False for padded
+            kp_mask = ~mask  # True for padded
+            key_padding_mask = kp_mask.repeat_interleave(nodes, dim=0)  # (batch * nodes, seq_len)
+
         if return_attn:
-            attn_out, attn_weights = self.attn(query, query, query, need_weights=True, average_attn_weights=False)
+            attn_out, attn_weights = self.attn(query, query, query, key_padding_mask=key_padding_mask, need_weights=True, average_attn_weights=False)
             # attn_out shape: (seq_len, batch * nodes, channels)
-            # attn_weights shape: (batch * nodes, seq_len, seq_len)
+            # attn_weights shape: (batch * nodes, num_heads, seq_len, seq_len)
             attn_out = attn_out.reshape(seq_len, batch, nodes, channels).permute(1, 2, 3, 0)
-            
+
+            if mask is not None:
+                valid_mask_4d = mask.unsqueeze(1).unsqueeze(2).to(attn_out.dtype)
+                attn_out = attn_out * valid_mask_4d
+                x = x * valid_mask_4d
+
             # Compute frame attention: average weights over heads, then average over nodes and queries
-            # attn_weights has shape (batch_size * nodes, num_heads, seq_len, seq_len)
+            # Handle potential NaNs from padding mask in attention weights
+            if key_padding_mask is not None:
+                attn_weights = torch.nan_to_num(attn_weights, nan=0.0)
             attn_weights = attn_weights.mean(dim=1)  # shape: (batch_size * nodes, seq_len, seq_len)
             attn_weights = attn_weights.reshape(batch, nodes, seq_len, seq_len)
             attn_weights = attn_weights.mean(dim=1)  # shape: (batch, seq_len, seq_len)
             frame_attn = attn_weights.mean(dim=1)  # shape: (batch, seq_len)
+            if mask is not None:
+                frame_attn = frame_attn * mask.to(frame_attn.dtype)
             # Apply LayerNorm along the channels dimension by transposing
             out = (attn_out + x).permute(0, 1, 3, 2)  # shape: (batch, nodes, seq_len, channels)
             out = self.norm(out)
             out = out.permute(0, 1, 3, 2)  # shape: (batch, nodes, channels, seq_len)
             return out, frame_attn
         else:
-            attn_out, _ = self.attn(query, query, query, need_weights=False)
+            attn_out, _ = self.attn(query, query, query, key_padding_mask=key_padding_mask, need_weights=False)
             attn_out = attn_out.reshape(seq_len, batch, nodes, channels).permute(1, 2, 3, 0)
+            if mask is not None:
+                valid_mask_4d = mask.unsqueeze(1).unsqueeze(2).to(attn_out.dtype)
+                attn_out = attn_out * valid_mask_4d
+                x = x * valid_mask_4d
             out = (attn_out + x).permute(0, 1, 3, 2)
             out = self.norm(out)
             out = out.permute(0, 1, 3, 2)
@@ -128,7 +158,7 @@ class STGAT(nn.Module):
         )
         self.export_mode = False
 
-    def forward(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
+    def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> Dict[str, torch.Tensor]:
         """Runs full forward pass returning logits, probabilities, and spatial/temporal explainability weights."""
         if self.export_mode:
             # Route to simplified forward if export mode is manually turned on
@@ -145,7 +175,9 @@ class STGAT(nn.Module):
         batch_size, seq_len, num_nodes, num_features = x.shape
         # Project features
         x_proj = self.input_proj(x)  # (batch_size, seq_len, 25, hidden_dim)
-        
+        if mask is not None:
+            x_proj = x_proj * mask.unsqueeze(2).unsqueeze(-1).to(x_proj.dtype)
+
         # Reshape to batched PyG inputs
         flattened = x_proj.reshape(batch_size * seq_len * num_nodes, -1)
         
@@ -160,14 +192,20 @@ class STGAT(nn.Module):
         spatial_out = spatial_out2.reshape(batch_size, seq_len, num_nodes, -1).permute(0, 2, 3, 1)  # (batch, nodes, channels, seq_len)
         
         # Temporal Conv Blocks
-        temporal_out = self.temporal1(spatial_out)
-        temporal_out = self.temporal2(temporal_out)
+        temporal_out = self.temporal1(spatial_out, mask=mask)
+        temporal_out = self.temporal2(temporal_out, mask=mask)
         
-        # Temporal Attention
-        temporal_out, frame_attention = self.temporal_attention(temporal_out, return_attn=True)
+        # Temporal Attention (enforcing padding mask if provided)
+        temporal_out, frame_attention = self.temporal_attention(temporal_out, return_attn=True, mask=mask)
         
-        # Global Pooling (average over sequence frames and spatial joints)
-        pooled = temporal_out.mean(dim=3).mean(dim=1)  # (batch_size, hidden_dim)
+        # Global Pooling (masked average over sequence frames and spatial joints)
+        if mask is not None:
+            mask_exp = mask.unsqueeze(1).unsqueeze(2).float().to(x.device)  # (batch, 1, 1, seq_len)
+            temporal_out_masked = temporal_out * mask_exp
+            valid_counts = mask_exp.sum(dim=3).clamp(min=1.0)
+            pooled = (temporal_out_masked.sum(dim=3) / valid_counts).mean(dim=1)
+        else:
+            pooled = temporal_out.mean(dim=3).mean(dim=1)  # (batch_size, hidden_dim)
         
         # Classifier
         logits = self.classifier(pooled)

@@ -9,12 +9,12 @@ from src.dataset import (
 )
 
 def mediapipe_to_intellirehab(landmarks: np.ndarray) -> np.ndarray:
-    """Transforms MediaPipe world landmarks coordinate convention to Kinect/IntelliRehabDS format.
-    
-    Coordinate mapping rationale:
-    - MediaPipe: X points user-left (screen-right), Y points down, Z points forward (towards camera).
-    - Kinect: X points screen-left (user-right), Y points up, Z points away (depth from camera).
-    - Negating X, Y, Z rotates the coordinates by 180 degrees and inverts depth to match Kinect.
+    """Transforms MediaPipe world landmarks to the Kinect/IntelliRehabDS coordinate convention.
+
+    MediaPipe uses a camera-facing world frame, while the Kinect/IntelliRehabDS representation
+    is expressed in a mirrored, upright coordinate system. Applying the same sign inversion to
+    all three axes preserves the geometric pose while aligning the coordinate convention used by
+    the downstream skeleton model.
     """
     return landmarks * np.array([-1.0, -1.0, -1.0], dtype=np.float32)
 

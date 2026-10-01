@@ -9,64 +9,160 @@ from src.graph import INTELLIREHAB_JOINTS, INTELLIREHAB_EDGES
 def plot_3d_skeleton(
     joints: np.ndarray, 
     edges: Optional[List[tuple]] = None, 
-    attention: Optional[Dict[str, float]] = None
+    attention: Optional[Dict[str, float]] = None,
+    show_labels: bool = False,
+    title: str = "3D Skeleton Attention Layout"
 ) -> go.Figure:
-    """Renders a 3D scatter plot of the human skeleton with optional attention-based node highlighting."""
+    """Renders an upright 3D scatter and anatomical bone structure of the human skeleton,
+    with GAT attention heat-mapping, prominent node markers, and full joint visibility.
+    """
     if edges is None:
         edges = INTELLIREHAB_EDGES
         
-    x, y, z = joints[:, 0], joints[:, 1], joints[:, 2]
+    # IntelliRehabDS / Kinect coordinates:
+    # joints[:, 0] is X (Lateral: Left to Right)
+    # joints[:, 1] is Y (Vertical Height: SpineBase = 0, Feet = -0.98m, Head = +0.98m)
+    # joints[:, 2] is Z (Depth: Forward / Backward distance)
+    #
+    # Plotly 3D Coordinate Mapping (Z is vertical UP):
+    plot_x = joints[:, 0]  # Lateral (meters)
+    plot_y = joints[:, 2]  # Depth (meters)
+    plot_z = joints[:, 1]  # Height (meters, Feet at bottom, Head at top)
+    
     fig = go.Figure()
     
-    # Node Colors
+    # 1. Bone segments (edges) - single combined trace for performance & clean depth sorting
+    edge_x: List[Optional[float]] = []
+    edge_y: List[Optional[float]] = []
+    edge_z: List[Optional[float]] = []
+    for start, end in edges:
+        edge_x.extend([plot_x[start], plot_x[end], None])
+        edge_y.extend([plot_y[start], plot_y[end], None])
+        edge_z.extend([plot_z[start], plot_z[end], None])
+        
+    fig.add_trace(go.Scatter3d(
+        x=edge_x, y=edge_y, z=edge_z,
+        mode='lines',
+        line=dict(color='rgba(100, 116, 139, 0.85)', width=6),
+        hoverinfo='none',
+        name='Skeletal Bones',
+        showlegend=False
+    ))
+    
+    # 2. Subtle ground reference circle beneath feet for depth perspective
+    floor_z = float(np.min(plot_z) - 0.04)
+    theta = np.linspace(0, 2 * np.pi, 48)
+    ring_r = 0.45
+    ring_x = ring_r * np.cos(theta)
+    ring_y = ring_r * np.sin(theta)
+    ring_z = np.full_like(ring_x, floor_z)
+    fig.add_trace(go.Scatter3d(
+        x=ring_x, y=ring_y, z=ring_z,
+        mode='lines',
+        line=dict(color='rgba(148, 163, 184, 0.35)', width=2, dash='dash'),
+        hoverinfo='none',
+        name='Floor Level',
+        showlegend=False
+    ))
+    
+    # 3. Node Colors & Sizes based on attention
+    color_vals = []
+    for i, joint_name in enumerate(INTELLIREHAB_JOINTS):
+        val = attention.get(joint_name, attention.get(str(i), 0.0)) if attention else 0.5
+        color_vals.append(float(val))
+    
+    color_arr = np.array(color_vals, dtype=np.float32)
+    min_val = float(color_arr.min())
+    max_val = float(color_arr.max())
+    val_range = (max_val - min_val) if max_val > min_val else 1.0
+    
     if attention is not None:
-        # attention maps joint names or indices to weights
-        color_vals = []
-        for i, joint_name in enumerate(INTELLIREHAB_JOINTS):
-            val = attention.get(joint_name, attention.get(str(i), 0.0))
-            color_vals.append(val)
+        # Scale marker sizes dynamically so high attention joints prominently stand out
+        norm_vals = (color_arr - min_val) / val_range
+        marker_sizes = (8 + 7 * norm_vals).tolist()
         marker_color = color_vals
         show_scale = True
     else:
-        marker_color = 'green'
+        marker_sizes = [9] * 25
+        marker_color = ['#0ea5e9'] * 25
         show_scale = False
         
-    # Scatter plot for joints (nodes)
+    # Customdata for rich hover tooltip
+    customdata = np.stack([
+        INTELLIREHAB_JOINTS,
+        [f"{i}" for i in range(25)],
+        [f"{c:.4f}" for c in color_vals]
+    ], axis=1)
+    
+    hovertemplate = (
+        "<b>%{customdata[0]}</b> (Joint #%{customdata[1]})<br>"
+        + ("Attention Weight: <b>%{customdata[2]}</b><br>" if attention is not None else "")
+        + "Lateral X: %{x:.2f}m<br>"
+        + "Height Z: %{z:.2f}m<br>"
+        + "Depth Y: %{y:.2f}m<extra></extra>"
+    )
+    
+    # Joint markers
     fig.add_trace(go.Scatter3d(
-        x=x, y=y, z=z,
-        mode='markers+text',
+        x=plot_x, y=plot_y, z=plot_z,
+        mode='markers+text' if show_labels else 'markers',
         marker=dict(
-            size=6, 
+            size=marker_sizes, 
             color=marker_color, 
-            colorscale='Viridis', 
+            colorscale='Plasma', 
             showscale=show_scale, 
-            colorbar=dict(title="Attention", x=0.85) if show_scale else None,
-            line=dict(color='darkblue', width=1)
+            colorbar=dict(
+                title=dict(text="Attention", font=dict(size=11)),
+                thickness=12,
+                len=0.65,
+                x=0.92,
+                tickfont=dict(size=10)
+            ) if show_scale else None,
+            line=dict(color='white', width=1.5),
+            opacity=0.95
         ),
-        text=INTELLIREHAB_JOINTS,
-        textposition='top center',
-        name='Joints'
+        text=INTELLIREHAB_JOINTS if show_labels else None,
+        textposition='top right',
+        textfont=dict(size=9, color='#1e293b'),
+        customdata=customdata,
+        hovertemplate=hovertemplate,
+        name='Joints',
+        showlegend=False
     ))
     
-    # Line segments (edges)
-    for start, end in edges:
-        fig.add_trace(go.Scatter3d(
-            x=[x[start], x[end]],
-            y=[y[start], y[end]],
-            z=[z[start], z[end]],
-            mode='lines',
-            line=dict(color='rgba(120, 120, 120, 0.8)', width=4),
-            showlegend=False
-        ))
-        
     fig.update_layout(
+        title=dict(text=title, font=dict(size=13, color="#334155"), x=0.03, y=0.96),
         scene=dict(
-            xaxis=dict(title='X (meters)', backgroundcolor="rgb(200, 200, 230)", gridcolor="white", showbackground=True),
-            yaxis=dict(title='Y (meters)', backgroundcolor="rgb(230, 200, 230)", gridcolor="white", showbackground=True),
-            zaxis=dict(title='Z (meters)', backgroundcolor="rgb(230, 230, 200)", gridcolor="white", showbackground=True),
+            xaxis=dict(
+                title='Lateral X (m)', 
+                showbackground=False, 
+                gridcolor="rgba(203, 213, 225, 0.4)",
+                zerolinecolor="rgba(148, 163, 184, 0.4)",
+                nticks=5
+            ),
+            yaxis=dict(
+                title='Depth Y (m)', 
+                showbackground=False, 
+                gridcolor="rgba(203, 213, 225, 0.4)",
+                zerolinecolor="rgba(148, 163, 184, 0.4)",
+                nticks=5
+            ),
+            zaxis=dict(
+                title='Height Z (m)', 
+                showbackground=False, 
+                gridcolor="rgba(203, 213, 225, 0.4)",
+                zerolinecolor="rgba(148, 163, 184, 0.4)",
+                nticks=6
+            ),
+            aspectmode='data', # Crucial 1:1:1 geometric scaling!
+            camera=dict(
+                eye=dict(x=0.0, y=-2.4, z=0.1), # Direct frontal view at eye-level
+                center=dict(x=0.0, y=0.0, z=0.0),
+                up=dict(x=0, y=0, z=1)
+            )
         ),
-        margin=dict(l=0, r=0, t=10, b=0),
-        legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01)
+        margin=dict(l=0, r=0, t=30, b=0),
+        height=500
     )
     return fig
 

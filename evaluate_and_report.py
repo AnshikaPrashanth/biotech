@@ -16,9 +16,9 @@ Covers:
   Part 12 — Final publication report
 
 Usage:
-    python evaluate_and_report.py --full
-    python evaluate_and_report.py --parts 1,2,3,6,11,12
-    python evaluate_and_report.py --checkpoint checkpoints/best_model.pt
+    python evaluate_and_report.py --legacy-full-dataset --full
+    python evaluate_and_report.py --legacy-full-dataset --parts 1,2,3,6,11,12
+    python scripts/run_loso_oof.py --smoke-folds 2
 """
 
 # ── stdlib ────────────────────────────────────────────────────
@@ -2137,11 +2137,16 @@ def parse_args():
     p.add_argument("--no-baselines",  action="store_true", help="Skip Part 8 (baselines)")
     p.add_argument("--no-ablation",   action="store_true", help="Skip Part 9 (ablation)")
     p.add_argument("--no-statistics", action="store_true", help="Skip Part 10 (statistics)")
+    p.add_argument(
+        "--legacy-full-dataset", action="store_true",
+        help="Explicitly enable legacy single-checkpoint inference over all loaded subjects; not OOF evaluation",
+    )
     return p.parse_args()
 
 
-def main():
-    args = parse_args()
+def legacy_full_dataset_evaluation(args=None):
+    """Legacy descriptive evaluation of one checkpoint over every loaded subject; not OOF."""
+    args = args or parse_args()
     set_seed(SEED)
     ensure_dirs()
 
@@ -2254,6 +2259,17 @@ def main():
     log.info("  EVALUATION COMPLETE")
     log.info(f"  Results saved in: {RESULTS_DIR.absolute()}")
     log.info("=" * 60)
+
+
+def main():
+    args = parse_args()
+    if not args.legacy_full_dataset:
+        raise SystemExit(
+            "This evaluator runs a single checkpoint over all loaded subjects and is not OOF. "
+            "Use scripts/run_loso_oof.py for OOF evaluation, or pass --legacy-full-dataset "
+            "to explicitly run the legacy analysis."
+        )
+    legacy_full_dataset_evaluation(args)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,58 @@
+# Frozen Experimental Protocol Configuration (Phase 3 Execution)
+seed: 42
+
+device: cpu
+num_threads: 4
+
+dataset:
+  raw_dir: "SkeletonData/SkeletonData/RawData"
+  manifest_path: "results/final/dataset_manifest.csv"
+  exclude_label_3: true
+  sequence_length: 64
+  padding_strategy: "zero_padded_with_mask"
+  use_frame_mask: true
+
+loso:
+  enabled: true
+  folds: 30
+
+training:
+  batch_size: 16
+  num_workers: 0
+  pin_memory: false
+  epochs: 50
+  lr: 0.0002
+  weight_decay: 0.0001
+  patience: 8
+  early_stopping_delta: 0.001
+
+model:
+  input_dim: 3
+  hidden_dim: 64
+  num_classes: 2
+  heads: 4
+  dropout: 0.2
+
+uncertainty:
+  confidence_threshold: 0.70
+  threshold_mode: "heuristic"
+
+biomechanical:
+  weights:
+    w_rom: 0.3
+    w_sym: 0.2
+    w_vel: 0.2
+    w_acc: 0.1
+    w_attention: 0.2
+  quality_score:
+    w_rom: 0.4
+    w_sym: 0.3
+    w_temporal: 0.1
+    w_bio: 0.2
+
+calibration:
+  baseline_drift_enabled: true
+  baseline_drift_alpha: 0.95
+
+evaluation:
+  oof_only: true
